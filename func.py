@@ -20,7 +20,7 @@ class dogKernel:
     self.kernel = None
 
   def __str__(self):
-    return f"___________________________\nKernel: {self.kernel}\nKernel Size: {np.shape(self.kernel)}\nKernel Center: {self.ctr}\nSurround Center: {self.sur}"
+    return f"___________________________\nKernel:\n{self.kernel}\nKernel Size: {np.shape(self.kernel)}\nKernel Center: {self.ctr}\nSurround Center: {self.sur}"
 
   def setFilterCoefficients(self, ONOFF):
     """

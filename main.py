@@ -22,3 +22,5 @@ kernelOFF.setFilterCoefficients(ONOFF="OFF")
 kernelON.displayKernel(show_plt=True, show_hist=True)
 
 # Next, read the SNNTorch documentation to determine how to derive spikes from images, and input them into the networks
+
+print(kernelON)
