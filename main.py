@@ -4,8 +4,7 @@
 # pip list to list all packages
 
 import torch
-from torchvision import datasets, transforms
-from torch.utils.data import random_split 
+import torchvision
 import numpy as np
 import matplotlib.pyplot as plt
 from func import *
@@ -22,8 +21,9 @@ kernelOFF = dogKernel(dim = dim, ang = ang, ppa = ppa, ctr = ctr, sur = sur)
 kernelON.setFilterCoefficients(ONOFF="ON")
 kernelOFF.setFilterCoefficients(ONOFF="OFF")
 
-kernelON.displayKernel(show_plt=True, show_hist=True)
+# kernelON.displayKernel(show_plt=True, show_hist=True)
 
 # Next, read the SNNTorch documentation to determine how to derive spikes from images, and input them into the networks
 
-FashionMNISTtesting = 
+print(torch.__version__)
+print(torchvision.__version__)
