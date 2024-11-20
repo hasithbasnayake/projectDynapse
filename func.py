@@ -14,6 +14,7 @@ class dogKernel:
     """
     self.dim = dim
     self.ang = ang
+    self.ppa = ppa
     self.ctr = ctr
     self.sur = sur
     self.kernel = None
