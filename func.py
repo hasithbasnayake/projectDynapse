@@ -1,5 +1,5 @@
 import numpy as np
-import matplotlib as plt
+import matplotlib.pyplot as plt
 
 class dogKernel:
   def __init__(self, dim, ang, ppa, ctr, sur):

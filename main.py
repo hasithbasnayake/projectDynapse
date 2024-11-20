@@ -4,7 +4,7 @@
 # pip list to list all packages
 
 import numpy as np
-import matplotlib as plt
+import matplotlib.pyplot as plt
 from func import *
 
 dim = np.array([6, 6])  # kernel dimensions (in pixels)
