@@ -4,7 +4,8 @@
 # pip list to list all packages
 
 import torch 
-import torchvision
+from torchvision import datasets
+from torch.utils.data import random_split
 import numpy as np
 import matplotlib.pyplot as plt
 from func import *
@@ -24,4 +25,14 @@ kernelOFF.setFilterCoefficients(ONOFF="OFF")
 # kernelON.displayKernel(show_plt=True, show_hist=True)
 
 # Next, read the SNNTorch documentation to determine how to derive spikes from images, and input them into the networks
+
+fashionMNISTTraining = datasets.FashionMNIST(root='./data/raw', train=False, download=True, transform=None)
+
+# Check object 
+print(fashionMNISTTraining[0])
+
+# Check type, it is a tuple 
+print(type(fashionMNISTTraining[0]))
+
+test_img, test_label = fashionMNISTTraining[0]
 
