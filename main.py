@@ -3,7 +3,7 @@
 # pip install -r requirements.txt to install from a requirements file
 # pip list to list all packages
 
-import torch
+import torch 
 import torchvision
 import numpy as np
 import matplotlib.pyplot as plt
@@ -25,5 +25,3 @@ kernelOFF.setFilterCoefficients(ONOFF="OFF")
 
 # Next, read the SNNTorch documentation to determine how to derive spikes from images, and input them into the networks
 
-print(torch.__version__)
-print(torchvision.__version__)
