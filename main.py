@@ -25,12 +25,14 @@ kernelOFF.setFilterCoefficients(ONOFF="OFF")
 # kernelON.displayKernel()
 # kernelOFF.displayKernel()
 
-training_set = datasets.FashionMNIST(root='./data/raw', train=True, download=True, transform=None)
-testing_set = datasets.FashionMNIST(root='./data/raw', train=False, download=True, transform=None)
+FashionMNISTTrain = datasets.FashionMNIST(root='./data/raw', train=True, download=True, transform=None)
+FashionMNISTTest = datasets.FashionMNIST(root='./data/raw', train=False, download=True, transform=None)
 
 num_train_samples = 1000
 num_test_samples = 200
 random_seed = np.random.seed(40)
+
+training_set, testing_set = partitionSets(training_set=FashionMNISTTrain, testing_set=FashionMNISTTest, num_train_samples=num_train_samples, num_test_samples=num_test_samples, random_seed=random_seed)
 
 
 

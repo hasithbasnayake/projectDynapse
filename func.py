@@ -86,5 +86,5 @@ class dogKernel:
 
     plt.show()
 
-
-
+def partitionSets(training_set, testing_set, num_train_samples, num_test_samples, random_seed):
+  ...
