@@ -22,9 +22,6 @@ kernelOFF = dogKernel(dim = dim, ang = ang, ppa = ppa, ctr = ctr, sur = sur)
 kernelON.setFilterCoefficients(ONOFF="ON")
 kernelOFF.setFilterCoefficients(ONOFF="OFF")
 
-# kernelON.displayKernel()
-# kernelOFF.displayKernel()
-
 FashionMNISTTrain = datasets.FashionMNIST(root='./data/raw', train=True, download=True, transform=None)
 FashionMNISTTest = datasets.FashionMNIST(root='./data/raw', train=False, download=True, transform=None)
 
@@ -36,6 +33,11 @@ training_set, testing_set = createTrainingTestingSets(training_images = FashionM
 
 print(len(training_set))
 print(len(testing_set))
+print(type(training_set[0]))
+
+# Elementary Data Analysis on these smaller sets, write a function
+
+
 
 # Create a function that loads the training and testing dataset and randomly creates a smaller test/training set
 # Write a function that conducts elementary data analysis when given that smaller test/training set 

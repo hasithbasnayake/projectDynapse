@@ -92,5 +92,5 @@ def createTrainingTestingSets(training_images, testing_images, num_train_samples
   training_set, _ = random_split(training_images, [num_train_samples, len(training_images) - num_train_samples])
   testing_set, _ = random_split(testing_images, [num_test_samples, len(testing_images) - num_test_samples])
 
-  return training_set, testing_set 
+
 
