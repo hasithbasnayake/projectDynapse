@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.signal import convolve2d
 
 class dogKernel:
   def __init__(self, dim, ang, ppa, ctr, sur):
@@ -56,7 +57,7 @@ class dogKernel:
     h /= h.sum()  # Normalize to sum to 1
     return h
   
-  def displayKernel(self, show_plt=True, show_hist=True):
+  def displayKernel(self, show_plt=True, show_hist=True, show_img=True):
     """
     Kernel display function
     :param plt: toggle pyplot (bool)
@@ -74,7 +75,16 @@ class dogKernel:
       display.add_subplot(1,3,2)
       plt.hist(self.kernel.flatten(), bins=20, range=[np.min(self.kernel), np.max(self.kernel)])
       plt.title("Histogram")
+    
+    if show_img == True:
+      display.add_subplot(1,3,3)
+      test_img = np.load('test_img.npy')
+      test_img = np.clip(convolve2d(test_img, self.kernel, mode='same'), 0, None)
+      plt.imshow(test_img, cmap='grey')
+      plt.title("Image")
+
 
     plt.show()
+
 
 

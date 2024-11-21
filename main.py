@@ -22,18 +22,18 @@ kernelOFF = dogKernel(dim = dim, ang = ang, ppa = ppa, ctr = ctr, sur = sur)
 kernelON.setFilterCoefficients(ONOFF="ON")
 kernelOFF.setFilterCoefficients(ONOFF="OFF")
 
-# kernelON.displayKernel(show_plt=True, show_hist=True)
+# kernelON.displayKernel()
+# kernelOFF.displayKernel()
 
-fashionMNISTTesting = datasets.FashionMNIST(root='./data/raw', train=False, download=True, transform=None)
-fashionMNISTTraining = datasets.FashionMNIST(root='./data/raw', train=True, download=True, transform=None)
+training_set = datasets.FashionMNIST(root='./data/raw', train=True, download=True, transform=None)
+testing_set = datasets.FashionMNIST(root='./data/raw', train=False, download=True, transform=None)
 
-# Check object 
-print(fashionMNISTTesting[0])
+num_train_samples = 1000
+num_test_samples = 200
+random_seed = np.random.seed(40)
 
-# Check type, it is a tuple 
-print(type(fashionMNISTTesting[0]))
 
-test_img, test_label = fashionMNISTTesting[0]
 
 # Create a function that loads the training and testing dataset and randomly creates a smaller test/training set
 # Write a function that conducts elementary data analysis when given that smaller test/training set 
+
