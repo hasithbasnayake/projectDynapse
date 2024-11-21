@@ -30,11 +30,12 @@ FashionMNISTTest = datasets.FashionMNIST(root='./data/raw', train=False, downloa
 
 num_train_samples = 1000
 num_test_samples = 200
-random_seed = np.random.seed(40)
+random_seed = 40
 
-training_set, testing_set = partitionSets(training_set=FashionMNISTTrain, testing_set=FashionMNISTTest, num_train_samples=num_train_samples, num_test_samples=num_test_samples, random_seed=random_seed)
+training_set, testing_set = createTrainingTestingSets(training_images = FashionMNISTTrain, testing_images = FashionMNISTTest, num_train_samples = num_train_samples, num_test_samples = num_test_samples, random_seed = random_seed)
 
-
+print(len(training_set))
+print(len(testing_set))
 
 # Create a function that loads the training and testing dataset and randomly creates a smaller test/training set
 # Write a function that conducts elementary data analysis when given that smaller test/training set 

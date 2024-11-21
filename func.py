@@ -1,3 +1,4 @@
+from torch.utils.data import random_split
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import convolve2d
@@ -86,5 +87,10 @@ class dogKernel:
 
     plt.show()
 
-def partitionSets(training_set, testing_set, num_train_samples, num_test_samples, random_seed):
-  ...
+def createTrainingTestingSets(training_images, testing_images, num_train_samples, num_test_samples, random_seed):
+  np.random.seed(random_seed)
+  training_set, _ = random_split(training_images, [num_train_samples, len(training_images) - num_train_samples])
+  testing_set, _ = random_split(testing_images, [num_test_samples, len(testing_images) - num_test_samples])
+
+  return training_set, testing_set 
+
