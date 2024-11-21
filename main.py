@@ -24,15 +24,16 @@ kernelOFF.setFilterCoefficients(ONOFF="OFF")
 
 # kernelON.displayKernel(show_plt=True, show_hist=True)
 
-# Next, read the SNNTorch documentation to determine how to derive spikes from images, and input them into the networks
-
-fashionMNISTTraining = datasets.FashionMNIST(root='./data/raw', train=False, download=True, transform=None)
+fashionMNISTTesting = datasets.FashionMNIST(root='./data/raw', train=False, download=True, transform=None)
+fashionMNISTTraining = datasets.FashionMNIST(root='./data/raw', train=True, download=True, transform=None)
 
 # Check object 
-print(fashionMNISTTraining[0])
+print(fashionMNISTTesting[0])
 
 # Check type, it is a tuple 
-print(type(fashionMNISTTraining[0]))
+print(type(fashionMNISTTesting[0]))
 
-test_img, test_label = fashionMNISTTraining[0]
+test_img, test_label = fashionMNISTTesting[0]
 
+# Create a function that loads the training and testing dataset and randomly creates a smaller test/training set
+# Write a function that conducts elementary data analysis when given that smaller test/training set 
