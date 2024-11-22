@@ -92,5 +92,30 @@ def createTrainingTestingSets(training_images, testing_images, num_train_samples
   training_set, _ = random_split(training_images, [num_train_samples, len(training_images) - num_train_samples])
   testing_set, _ = random_split(testing_images, [num_test_samples, len(testing_images) - num_test_samples])
 
+  return training_set, testing_set
+
+def dataAnalysis(dataset):
+  labels = ["T-shirt/top", "Trouser", "Pullover", "Dress", "Coat", "Sandal", "Shirt", "Sneaker", "Bag", "Ankle Boot"]
+  px_val = []
+  num_label = [0] * len(labels)
+
+  for curr in dataset:
+    img, label = curr
+    px_val.extend(np.array(img).flatten())
+    num_label[label] += 1
+  
+  px_val = np.array(px_val)
+
+  results_dict = {
+    "min" : np.min(px_val),
+    "max" : np.max(px_val),
+    "mean" : np.mean(px_val),
+    "median" : np.median(px_val),
+    "std_val" : np.std(px_val),
+    "px_val" : px_val,
+    "label_plot" : [labels, num_label]
+  }
+
+  return results_dict
 
 

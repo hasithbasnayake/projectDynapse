@@ -31,9 +31,25 @@ random_seed = 40
 
 training_set, testing_set = createTrainingTestingSets(training_images = FashionMNISTTrain, testing_images = FashionMNISTTest, num_train_samples = num_train_samples, num_test_samples = num_test_samples, random_seed = random_seed)
 
-print(len(training_set))
-print(len(testing_set))
-print(type(training_set[0]))
+# print(len(training_set))
+# print(len(testing_set))
+# print(type(training_set[0]))
+
+# img, img_label = training_set[0]
+
+# img = np.array(img)
+
+# print(type(img))
+# print(np.shape(img))
+
+# min, mean, median, max, std = exploratoryDataAnalysis(training_set, testing_set)
+# print(f"min: {min}, mean: {mean}, median: {median}, max: {max}, std: {std}")
+
+dict = dataAnalysis(training_set)
+
+plt.figure(figsize=(15,7))
+plt.bar(dict["label_plot"][0], dict["label_plot"][1], color='salmon')
+plt.show()
 
 # Elementary Data Analysis on these smaller sets, write a function
 
