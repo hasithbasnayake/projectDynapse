@@ -28,6 +28,7 @@ FashionMNISTTest = datasets.FashionMNIST(root='./data/raw', train=False, downloa
 num_train_samples = 1000
 num_test_samples = 200
 rng = np.random.default_rng(2021)
+# rng = torch.random.manual_seed(2024)
 
 training_set, testing_set = createTrainingTestingSets(training_images = FashionMNISTTrain, testing_images = FashionMNISTTest, num_train_samples = num_train_samples, num_test_samples = num_test_samples, rng=rng)
 

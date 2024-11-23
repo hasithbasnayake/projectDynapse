@@ -1,4 +1,4 @@
-from torch.utils.data import random_split
+from torch import utils
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import convolve2d
@@ -88,6 +88,9 @@ class dogKernel:
     plt.show()
 
 def createTrainingTestingSets(training_images, testing_images, num_train_samples, num_test_samples, rng):
+
+  # training_set = utils.data_subset(training_images, num_train_samples)
+  # testing_set = utils.data_subset(testing_images, num_test_samples)
   
   train_idx = rng.choice(len(training_images), num_train_samples, replace=False)
   test_idx = rng.choice(len(testing_images), num_test_samples, replace=False)
