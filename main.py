@@ -49,6 +49,7 @@ testing_set_analysis = dataAnalysis(testing_set)
 plt.figure(figsize=(15,7))
 plt.title("All Images")
 plt.hist(full_set_analysis["px_val"], bins=256, range=(0,255), edgecolor='black')
+plt.yscale('log')
 plt.show()
 
 # plt.figure(figsize=(15,7))
