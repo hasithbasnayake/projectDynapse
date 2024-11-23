@@ -87,23 +87,34 @@ class dogKernel:
 
     plt.show()
 
-def createTrainingTestingSets(training_images, testing_images, num_train_samples, num_test_samples, random_seed):
-  np.random.seed(random_seed)
-  training_set, _ = random_split(training_images, [num_train_samples, len(training_images) - num_train_samples])
-  testing_set, _ = random_split(testing_images, [num_test_samples, len(testing_images) - num_test_samples])
+def createTrainingTestingSets(training_images, testing_images, num_train_samples, num_test_samples, rng):
+  
+  train_idx = rng.choice(len(training_images), num_train_samples, replace=False)
+  test_idx = rng.choice(len(testing_images), num_test_samples, replace=False)
+
+  training_set = []
+  testing_set = [] 
+
+  for idx in train_idx:
+    training_set.append(training_images[idx])
+  
+  for idx in test_idx:
+    testing_set.append(testing_images[idx])
 
   return training_set, testing_set
 
 def dataAnalysis(dataset):
+
   labels = ["T-shirt/top", "Trouser", "Pullover", "Dress", "Coat", "Sandal", "Shirt", "Sneaker", "Bag", "Ankle Boot"]
   px_val = []
   num_label = [0] * len(labels)
 
   for curr in dataset:
     img, label = curr
-    px_val.extend(np.array(img).flatten())
+    img = np.array(img)
+    px_val.extend(img.flatten())
     num_label[label] += 1
-  
+
   px_val = np.array(px_val)
 
   results_dict = {

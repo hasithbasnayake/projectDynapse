@@ -27,9 +27,9 @@ FashionMNISTTest = datasets.FashionMNIST(root='./data/raw', train=False, downloa
 
 num_train_samples = 1000
 num_test_samples = 200
-random_seed = 40
+rng = np.random.default_rng(2021)
 
-training_set, testing_set = createTrainingTestingSets(training_images = FashionMNISTTrain, testing_images = FashionMNISTTest, num_train_samples = num_train_samples, num_test_samples = num_test_samples, random_seed = random_seed)
+training_set, testing_set = createTrainingTestingSets(training_images = FashionMNISTTrain, testing_images = FashionMNISTTest, num_train_samples = num_train_samples, num_test_samples = num_test_samples, rng=rng)
 
 # For all images, min, mean, max, std dev, classification graph, pixel distributions [DONE]
 # For training_set, min, mean, max, std dev, classification graph, pixel distributions [DONE]
@@ -41,19 +41,23 @@ full_set_analysis = dataAnalysis(training_set + testing_set)
 training_set_analysis = dataAnalysis(training_set)
 testing_set_analysis = dataAnalysis(testing_set)
 
-plt.figure(figsize=(15,7))
-plt.title("All Images")
-plt.bar(full_set_analysis["label_plot"][0], full_set_analysis["label_plot"][1])
-plt.show()
+# print(full_set_analysis)
+# print(training_set_analysis)
+# print(testing_set_analysis)
 
 plt.figure(figsize=(15,7))
-plt.title("Training Images")
-plt.bar(training_set_analysis["label_plot"][0], training_set_analysis["label_plot"][1])
+plt.title("All Images")
+plt.hist(full_set_analysis["px_val"], bins=256, range=(0,255), edgecolor='black')
 plt.show()
+
+# plt.figure(figsize=(15,7))
+# plt.title("Training Images")
+# plt.bar(training_set_analysis["label_plot"][0], training_set_analysis["label_plot"][1])
+# plt.show()
  
-plt.figure(figsize=(15,7))
-plt.title("Testing Images")
-plt.bar(testing_set_analysis["label_plot"][0], testing_set_analysis["label_plot"][1])
-plt.show()
+# plt.figure(figsize=(15,7))
+# plt.title("Testing Images")
+# plt.bar(testing_set_analysis["label_plot"][0], testing_set_analysis["label_plot"][1])
+# plt.show()
 
  
