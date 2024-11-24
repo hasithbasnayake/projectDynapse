@@ -25,41 +25,18 @@ kernelOFF.setFilterCoefficients(ONOFF="OFF")
 FashionMNISTTrain = datasets.FashionMNIST(root='./data/raw', train=True, download=True, transform=None)
 FashionMNISTTest = datasets.FashionMNIST(root='./data/raw', train=False, download=True, transform=None)
 
+print(type(FashionMNISTTest[0][1]))
+
+
 num_train_samples = 1000
 num_test_samples = 200
 rng = np.random.default_rng(2021)
-# rng = torch.random.manual_seed(2024)
 
 training_set, testing_set = createTrainingTestingSets(training_images = FashionMNISTTrain, testing_images = FashionMNISTTest, num_train_samples = num_train_samples, num_test_samples = num_test_samples, rng=rng)
-
-# For all images, min, mean, max, std dev, classification graph, pixel distributions [DONE]
-# For training_set, min, mean, max, std dev, classification graph, pixel distributions [DONE]
-# For testing_set, min, mean, max, std dev, classification graph, pixel distributions [DONE]
-# For training_set, each label, min, mean, max, std dev, classification graph, pixel distributions
-# For testing_set, each label, min, mean, max, std dev, classification graph, pixel distributions
 
 full_set_analysis = dataAnalysis(training_set + testing_set)
 training_set_analysis = dataAnalysis(training_set)
 testing_set_analysis = dataAnalysis(testing_set)
 
-# print(full_set_analysis)
-# print(training_set_analysis)
-# print(testing_set_analysis)
 
-plt.figure(figsize=(15,7))
-plt.title("All Images")
-plt.hist(full_set_analysis["px_val"], bins=256, range=(0,255), edgecolor='black')
-plt.yscale('log')
-plt.show()
 
-# plt.figure(figsize=(15,7))
-# plt.title("Training Images")
-# plt.bar(training_set_analysis["label_plot"][0], training_set_analysis["label_plot"][1])
-# plt.show()
- 
-# plt.figure(figsize=(15,7))
-# plt.title("Testing Images")
-# plt.bar(testing_set_analysis["label_plot"][0], testing_set_analysis["label_plot"][1])
-# plt.show()
-
- 
