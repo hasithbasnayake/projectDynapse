@@ -2,10 +2,9 @@
 # pip freeze > requirements.txt You can export a list of all installed packages
 # pip install -r requirements.txt to install from a requirements file
 # pip list to list all packages
-
-import torch 
+ 
 from torchvision import datasets
-from torch.utils.data import random_split
+import snntorch as snn
 import numpy as np
 import matplotlib.pyplot as plt
 from func import *
@@ -25,9 +24,6 @@ kernelOFF.setFilterCoefficients(ONOFF="OFF")
 FashionMNISTTrain = datasets.FashionMNIST(root='./data/raw', train=True, download=True, transform=None)
 FashionMNISTTest = datasets.FashionMNIST(root='./data/raw', train=False, download=True, transform=None)
 
-print(type(FashionMNISTTest[0][1]))
-
-
 num_train_samples = 1000
 num_test_samples = 200
 rng = np.random.default_rng(2021)
@@ -38,5 +34,9 @@ full_set_analysis = dataAnalysis(training_set + testing_set)
 training_set_analysis = dataAnalysis(training_set)
 testing_set_analysis = dataAnalysis(testing_set)
 
+ON_training_set = genLGNActivityMaps(training_set, kernelON.kernel)
+OFF_training_set = genLGNActivityMaps(training_set, kernelOFF.kernel)
 
 
+# Min, max, and mean has been double checked with matlab values and are essentially the same. 
+# genLGNActivityMaps has been double checked to make sure it's convolving images, and keeping labels the same

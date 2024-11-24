@@ -1,4 +1,6 @@
 from torch import utils
+import snntorch as snn
+from scipy.signal import convolve2d
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import convolve2d
@@ -36,13 +38,19 @@ class dogKernel:
     sur_kernel = self.gen_gaussian_kernel(self.dim, self.sur)
 
     if ONOFF == 'ON':
-      self.kernel = ctr_kernel - sur_kernel
+      self.kernel = +ctr_kernel - sur_kernel
     elif ONOFF == 'OFF':
       self.kernel = -ctr_kernel + sur_kernel
     else:
       print(f"Incorrect argument given, passed {ONOFF} to ONOFF, when it should be 'ON' or 'OFF'")
 
-    self.kernel -= np.mean(self.kernel)
+    self.kernel = self.kernel - np.mean(self.kernel)
+
+    input_min = 0
+    input_max = 1
+
+    self.kernel = self.kernel / (np.sum(np.abs(self.kernel)) / 2) * (input_max - input_min)
+
 
   def gen_gaussian_kernel(self, shape, sigma):
     """
@@ -86,6 +94,7 @@ class dogKernel:
 
 
     plt.show()
+
 
 def createTrainingTestingSets(training_images, testing_images, num_train_samples, num_test_samples, rng):
 
@@ -131,5 +140,37 @@ def dataAnalysis(dataset):
   }
 
   return results_dict
+
+def genLGNActivityMaps(data, DoGkernel):
+  kernel = DoGkernel
+  convolved_dataset = []
+
+  for curr in data:
+    img, label = curr 
+    img = np.array(img)
+    img = convolve2d(img, kernel, mode="same")
+    img = np.clip(img, 0, None)
+    new_tuple = (img, label)
+    convolved_dataset.append(new_tuple)
+  
+  # Debug statements
+
+  # print(f"Length of new dataset: {len(convolved_dataset)}")
+  # print(f"Type of new dataset: {type(convolved_dataset)}")
+  # print(f"Type of new dataset element: {type(convolved_dataset[0])}")
+  # print(f"Type of new dataset element first element: {type(convolved_dataset[0][0])}")
+  # print(f"Type of new dataset element second element: {type(convolved_dataset[0][1])}")
+  # images = [curr[0] for curr in convolved_dataset]
+  # labels = [curr[1] for curr in convolved_dataset]
+
+  # print(f"Min of new dataset element first element: {np.min(images)}")
+  # print(f"Max of new dataset element first element: {np.max(images)}")
+  # print(f"Min of new dataset element second element: {np.min(labels)}")
+  # print(f"Max of new dataset element second element: {np.max(labels)}")
+
+  return convolved_dataset
+    
+
+
 
 
