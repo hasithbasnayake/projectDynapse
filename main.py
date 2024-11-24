@@ -37,6 +37,7 @@ testing_set_analysis = dataAnalysis(testing_set)
 ON_training_set = genLGNActivityMaps(training_set, kernelON.kernel)
 OFF_training_set = genLGNActivityMaps(training_set, kernelOFF.kernel)
 
-
 # Min, max, and mean has been double checked with matlab values and are essentially the same. 
 # genLGNActivityMaps has been double checked to make sure it's convolving images, and keeping labels the same
+
+# Write latency encoding code using snntorch
