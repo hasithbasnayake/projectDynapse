@@ -6,6 +6,7 @@
 from torchvision import datasets
 from torch.utils.data import DataLoader
 import snntorch as snn
+from IPython.display import HTML
 from snntorch import spikegen
 import snntorch.spikeplot as splt
 import numpy as np
@@ -48,6 +49,7 @@ data = iter(train_loader)
 data_it, targets_it = next(data)  
 
 spike_data = spikegen.latency(data_it, num_steps=100, tau=5, threshold=0.01)
+print(f"Spike data shape: {spike_data.shape}")
 
 fig = plt.figure(facecolor="w", figsize=(10, 5))
 ax = fig.add_subplot(111)
@@ -57,6 +59,12 @@ plt.title("Input Layer")
 plt.xlabel("Time step")
 plt.ylabel("Neuron Number")
 plt.show()
+
+spike_data_sample = spike_data[:, 0]
+fig, ax = plt.subplots()
+anim = splt.animator(spike_data_sample, fig, ax)
+
+anim.save("random_spikes.gif")
 
 
 # Min, max, and mean has been double checked with matlab values and are essentially the same. 
