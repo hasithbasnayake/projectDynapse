@@ -148,7 +148,7 @@ def genLGNActivityMaps(data, DoGkernel, debug=False):
 
 
   for curr in data:
-    img, label = curra
+    img, label = curr
     img = np.array(img) # Convert to np.array
     img = convolve2d(img, kernel, mode="same") # Apply DoG Kernel
     img = np.clip(img, 0, None) # Clip negative values 

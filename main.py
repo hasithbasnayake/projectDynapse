@@ -41,11 +41,10 @@ OFF_training_set = genLGNActivityMaps(training_set, kernelOFF.kernel, False)
 
 train_loader = DataLoader(ON_training_set, batch_size=128)
 
-print(type(ON_training_set))
-print(len(ON_training_set))
+data = iter(train_loader) 
+data_it, targets_it = next(data)  
 
-# spike_data = spikegen.latency(ON_training_set, num_steps=100, tau=5, threshold=0.01)
-
+spike_data = spikegen.latency(ON_training_set, num_steps=100, tau=5, threshold=0.01)
 # fig = plt.figure(facecolor="w", figsize=(10, 5))
 # ax = fig.add_subplot(111)
 # plt.raster(spike_data[:, 0].view(100, -1), ax, s=25, c="black")
