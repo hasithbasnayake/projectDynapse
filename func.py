@@ -173,7 +173,17 @@ def genLGNActivityMaps(data, DoGkernel, debug=False):
 
   return convolved_dataset
     
+def convertToTensor(data):
+  tensor_dataset = []
+  
+  for curr in data:
+    img, label = curr
+    img = torch.from_numpy(img).float() / 255  # Convert numpy array to tensor and ensure it's float
+    
+    new_tuple = (img, label)
+    tensor_dataset.append(new_tuple)
 
+  return tensor_dataset
 
 
 
