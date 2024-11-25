@@ -7,6 +7,7 @@ from torchvision import datasets
 from torch.utils.data import DataLoader
 import snntorch as snn
 from snntorch import spikegen
+import snntorch.spikeplot as splt
 import numpy as np
 import matplotlib.pyplot as plt
 from func import *
@@ -39,23 +40,30 @@ testing_set_analysis = dataAnalysis(testing_set)
 ON_training_set = genLGNActivityMaps(training_set, kernelON.kernel, True)
 OFF_training_set = genLGNActivityMaps(training_set, kernelOFF.kernel, False)
 
-train_loader = DataLoader(ON_training_set, batch_size=128)
+tensor_dataset = convertToTensor(ON_training_set)
+
+train_loader = DataLoader(tensor_dataset, batch_size=128)
 
 data = iter(train_loader) 
 data_it, targets_it = next(data)  
 
-spike_data = spikegen.latency(ON_training_set, num_steps=100, tau=5, threshold=0.01)
-# fig = plt.figure(facecolor="w", figsize=(10, 5))
-# ax = fig.add_subplot(111)
-# plt.raster(spike_data[:, 0].view(100, -1), ax, s=25, c="black")
+spike_data = spikegen.latency(data_it, num_steps=100, tau=5, threshold=0.01)
 
-# plt.title("Input Layer")
-# plt.xlabel("Time step")
-# plt.ylabel("Neuron Number")
-# plt.show()
+fig = plt.figure(facecolor="w", figsize=(10, 5))
+ax = fig.add_subplot(111)
+splt.raster(spike_data[:, 0].view(100, -1), ax, s=25, c="black")
+
+plt.title("Input Layer")
+plt.xlabel("Time step")
+plt.ylabel("Neuron Number")
+plt.show()
 
 
 # Min, max, and mean has been double checked with matlab values and are essentially the same. 
 # genLGNActivityMaps has been double checked to make sure it's convolving images, and keeping labels the same
 
 # Write latency encoding code using snntorch
+
+# So there's two options, we can either do the image augmentation through keeping everything a tensor, create a 
+# DoG kernel in the form of a tensor that we can use pytorch.functional.nn conv2d function on 
+# Then compare those final results to the tensor you produced before and checked against the matlab functions 
