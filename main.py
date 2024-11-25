@@ -4,7 +4,9 @@
 # pip list to list all packages
  
 from torchvision import datasets
+from torch.utils.data import DataLoader
 import snntorch as snn
+from snntorch import spikegen
 import numpy as np
 import matplotlib.pyplot as plt
 from func import *
@@ -34,8 +36,25 @@ full_set_analysis = dataAnalysis(training_set + testing_set)
 training_set_analysis = dataAnalysis(training_set)
 testing_set_analysis = dataAnalysis(testing_set)
 
-ON_training_set = genLGNActivityMaps(training_set, kernelON.kernel)
-OFF_training_set = genLGNActivityMaps(training_set, kernelOFF.kernel)
+ON_training_set = genLGNActivityMaps(training_set, kernelON.kernel, True)
+OFF_training_set = genLGNActivityMaps(training_set, kernelOFF.kernel, False)
+
+train_loader = DataLoader(ON_training_set, batch_size=128)
+
+print(type(ON_training_set))
+print(len(ON_training_set))
+
+# spike_data = spikegen.latency(ON_training_set, num_steps=100, tau=5, threshold=0.01)
+
+# fig = plt.figure(facecolor="w", figsize=(10, 5))
+# ax = fig.add_subplot(111)
+# plt.raster(spike_data[:, 0].view(100, -1), ax, s=25, c="black")
+
+# plt.title("Input Layer")
+# plt.xlabel("Time step")
+# plt.ylabel("Neuron Number")
+# plt.show()
+
 
 # Min, max, and mean has been double checked with matlab values and are essentially the same. 
 # genLGNActivityMaps has been double checked to make sure it's convolving images, and keeping labels the same

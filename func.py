@@ -1,4 +1,5 @@
-from torch import utils
+import torch
+from torchvision import transforms 
 import snntorch as snn
 from scipy.signal import convolve2d
 import numpy as np
@@ -141,32 +142,34 @@ def dataAnalysis(dataset):
 
   return results_dict
 
-def genLGNActivityMaps(data, DoGkernel):
+def genLGNActivityMaps(data, DoGkernel, debug=False):
   kernel = DoGkernel
   convolved_dataset = []
 
+
   for curr in data:
-    img, label = curr 
-    img = np.array(img)
-    img = convolve2d(img, kernel, mode="same")
-    img = np.clip(img, 0, None)
-    new_tuple = (img, label)
-    convolved_dataset.append(new_tuple)
-  
-  # Debug statements
+    img, label = curra
+    img = np.array(img) # Convert to np.array
+    img = convolve2d(img, kernel, mode="same") # Apply DoG Kernel
+    img = np.clip(img, 0, None) # Clip negative values 
+    new_tuple = (img, label) # Create tuple 
+    convolved_dataset.append(new_tuple) # Append tuple to list 
 
-  # print(f"Length of new dataset: {len(convolved_dataset)}")
-  # print(f"Type of new dataset: {type(convolved_dataset)}")
-  # print(f"Type of new dataset element: {type(convolved_dataset[0])}")
-  # print(f"Type of new dataset element first element: {type(convolved_dataset[0][0])}")
-  # print(f"Type of new dataset element second element: {type(convolved_dataset[0][1])}")
-  # images = [curr[0] for curr in convolved_dataset]
-  # labels = [curr[1] for curr in convolved_dataset]
+  if debug == True:
+    # Debug statements
 
-  # print(f"Min of new dataset element first element: {np.min(images)}")
-  # print(f"Max of new dataset element first element: {np.max(images)}")
-  # print(f"Min of new dataset element second element: {np.min(labels)}")
-  # print(f"Max of new dataset element second element: {np.max(labels)}")
+    print(f"Length of new dataset: {len(convolved_dataset)}")
+    print(f"Type of new dataset: {type(convolved_dataset)}")
+    print(f"Type of new dataset element: {type(convolved_dataset[0])}")
+    print(f"Type of new dataset element first element: {type(convolved_dataset[0][0])}")
+    print(f"Type of new dataset element second element: {type(convolved_dataset[0][1])}")
+    images = [curr[0] for curr in convolved_dataset]
+    labels = [curr[1] for curr in convolved_dataset]
+
+    print(f"Min of new dataset element first element: {np.min(images)}")
+    print(f"Max of new dataset element first element: {np.max(images)}")
+    print(f"Min of new dataset element second element: {np.min(labels)}")
+    print(f"Max of new dataset element second element: {np.max(labels)}")
 
   return convolved_dataset
     
