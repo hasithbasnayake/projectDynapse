@@ -38,8 +38,16 @@ full_set_analysis = dataAnalysis(training_set + testing_set)
 training_set_analysis = dataAnalysis(training_set)
 testing_set_analysis = dataAnalysis(testing_set)
 
+plt.title("Unaltered Sneaker")
+plt.imshow(training_set[0][0], cmap="grey")
+plt.savefig("UnalteredSneaker.png")
+
 ON_training_set = genLGNActivityMaps(training_set, kernelON.kernel, True)
 OFF_training_set = genLGNActivityMaps(training_set, kernelOFF.kernel, False)
+
+plt.title("Activity Map Sneaker")
+plt.imshow(ON_training_set[0][0], cmap="grey")
+plt.savefig("ActivityMapSneaker.png")
 
 tensor_dataset = convertToTensor(ON_training_set)
 
@@ -55,16 +63,17 @@ fig = plt.figure(facecolor="w", figsize=(10, 5))
 ax = fig.add_subplot(111)
 splt.raster(spike_data[:, 0].view(100, -1), ax, s=25, c="black")
 
-plt.title("Input Layer")
+plt.title(f"Spike Train of Sneaker")
 plt.xlabel("Time step")
 plt.ylabel("Neuron Number")
+plt.savefig("SpikeTrainOfSneaker.png")
 plt.show()
 
 spike_data_sample = spike_data[:, 0]
 fig, ax = plt.subplots()
 anim = splt.animator(spike_data_sample, fig, ax)
 
-anim.save("random_spikes.gif")
+anim.save("SneakerSpikes.gif")
 
 
 # Min, max, and mean has been double checked with matlab values and are essentially the same. 
