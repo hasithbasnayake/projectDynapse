@@ -3,6 +3,7 @@
 # pip install -r requirements.txt to install from a requirements file
 # pip list to list all packages
  
+import torch
 from torchvision import datasets
 from torch.utils.data import DataLoader
 import torch.nn as nn
@@ -38,16 +39,16 @@ full_set_analysis = dataAnalysis(training_set + testing_set)
 training_set_analysis = dataAnalysis(training_set)
 testing_set_analysis = dataAnalysis(testing_set)
 
-plt.title("Unaltered Sneaker")
-plt.imshow(training_set[0][0], cmap="grey")
-# plt.savefig("UnalteredSneaker.png")
+# plt.title("Unaltered Sneaker")
+# plt.imshow(training_set[0][0], cmap="grey")
+# # plt.savefig("UnalteredSneaker.png")
 
-ON_training_set = genLGNActivityMaps(training_set, kernelON.kernel, True)
-OFF_training_set = genLGNActivityMaps(training_set, kernelOFF.kernel, False)
+ON_training_set = genLGNActivityMaps(training_set, kernelON.kernel, False)
+OFF_training_set = genLGNActivityMaps(training_set, kernelON.kernel, False)
 
-plt.title("Activity Map Sneaker")
-plt.imshow(ON_training_set[0][0], cmap="grey")
-# plt.savefig("ActivityMapSneaker.png")
+# plt.title("Activity Map Sneaker")
+# plt.imshow(ON_training_set[0][0], cmap="grey")
+# # plt.savefig("ActivityMapSneaker.png")
 
 tensor_dataset = convertToTensor(ON_training_set)
 
@@ -57,7 +58,7 @@ data = iter(train_loader)
 data_it, targets_it = next(data)  
 
 spike_data = spikegen.latency(data_it, num_steps=100, tau=5, threshold=0.01)
-print(f"Spike data shape: {spike_data.shape}")
+# print(f"Spike data shape: {spike_data.shape}")
 
 fig = plt.figure(facecolor="w", figsize=(10, 5))
 ax = fig.add_subplot(111)
@@ -73,7 +74,7 @@ spike_data_sample = spike_data[:, 0]
 fig, ax = plt.subplots()
 anim = splt.animator(spike_data_sample, fig, ax, 20, 500)
 
-anim.save("SneakerSpikes.gif")
+# anim.save("SneakerSpikes.gif")
 
 # Min, max, and mean has been double checked with matlab values and are essentially the same. 
 # genLGNActivityMaps has been double checked to make sure it's convolving images, and keeping labels the same
@@ -88,7 +89,7 @@ num_inputs = 28*28
 num_hidden = 1000
 num_outputs = 10
 
-num_steps = 25
+num_steps = 100
 beta = 0.95
 
 batch_size = 100
@@ -124,3 +125,95 @@ class NeuralNetwork(nn.Module):
 
         return torch.stack(spk2_rec, dim=0), torch.stack(mem2_rec, dim=0)
 
+loss = nn.CrossEntropyLoss()
+net = NeuralNetwork()
+optimizer = torch.optim.Adam(net.parameters(), lr=5e-4, betas=(0.9, 0.999))
+
+data, targets = next(iter(train_loader))
+
+spk_rec, mem_rec = net(data.view(batch_size, -1))
+
+print(mem_rec.size())
+
+num_epochs = 10
+loss_hist = []
+test_loss_hist = []
+counter = 0
+
+dtype = torch.float
+
+test_loader = DataLoader(convertToTensor(OFF_training_set), batch_size=batch_size, shuffle=True, drop_last=True)
+
+def print_batch_accuracy(data, targets, train=False):
+    output, _ = net(data.view(batch_size, -1))
+    _, idx = output.sum(dim=0).max(1)
+    acc = np.mean((targets == idx).detach().cpu().numpy())
+
+    if train:
+        print(f"Train set accuracy for a single minibatch: {acc*100:.2f}%")
+    else:
+        print(f"Test set accuracy for a single minibatch: {acc*100:.2f}%")
+
+def train_printer():
+    print(f"Epoch {epoch}, Iteration {iter_counter}")
+    print(f"Train Set Loss: {loss_hist[counter]:.2f}")
+    print(f"Test Set Loss: {test_loss_hist[counter]:.2f}")
+    print_batch_accuracy(data, targets, train=True)
+    print_batch_accuracy(test_data, test_targets, train=False)
+    print("\n")
+
+
+# Outer training loop
+for epoch in range(num_epochs):
+    iter_counter = 0
+    train_batch = iter(train_loader)
+
+    # Minibatch training loop
+    for data, targets in train_batch:
+
+        # forward pass
+        net.train()
+        spk_rec, mem_rec = net(data.view(batch_size, -1))
+
+        # initialize the loss & sum over time
+        loss_val = torch.zeros((1), dtype=dtype)
+        for step in range(num_steps):
+            loss_val += loss(mem_rec[step], targets)
+
+        # Gradient calculation + weight update
+        optimizer.zero_grad()
+        loss_val.backward()
+        optimizer.step()
+
+        # Store loss history for future plotting
+        loss_hist.append(loss_val.item())
+
+        # Test set
+        with torch.no_grad():
+            net.eval()
+            test_data, test_targets = next(iter(test_loader))
+
+            # Test set forward pass
+            test_spk, test_mem = net(test_data.view(batch_size, -1))
+
+            # Test set loss
+            test_loss = torch.zeros((1), dtype=dtype)
+            for step in range(num_steps):
+                test_loss += loss(test_mem[step], test_targets)
+            test_loss_hist.append(test_loss.item())
+
+            # Print train/test loss/accuracy
+            if counter % 50 == 0:
+                train_printer()
+            counter += 1
+            iter_counter +=1
+
+# Plot Loss
+fig = plt.figure(facecolor="w", figsize=(10, 5))
+plt.plot(loss_hist)
+plt.plot(test_loss_hist)
+plt.title("Loss Curves")
+plt.legend(["Train Loss", "Test Loss"])
+plt.xlabel("Iteration")
+plt.ylabel("Loss")
+plt.show()
