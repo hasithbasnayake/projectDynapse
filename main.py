@@ -40,18 +40,18 @@ testing_set_analysis = dataAnalysis(testing_set)
 
 plt.title("Unaltered Sneaker")
 plt.imshow(training_set[0][0], cmap="grey")
-plt.savefig("UnalteredSneaker.png")
+# plt.savefig("UnalteredSneaker.png")
 
 ON_training_set = genLGNActivityMaps(training_set, kernelON.kernel, True)
 OFF_training_set = genLGNActivityMaps(training_set, kernelOFF.kernel, False)
 
 plt.title("Activity Map Sneaker")
 plt.imshow(ON_training_set[0][0], cmap="grey")
-plt.savefig("ActivityMapSneaker.png")
+# plt.savefig("ActivityMapSneaker.png")
 
 tensor_dataset = convertToTensor(ON_training_set)
 
-train_loader = DataLoader(tensor_dataset, batch_size=128)
+train_loader = DataLoader(tensor_dataset, batch_size=100)
 
 data = iter(train_loader) 
 data_it, targets_it = next(data)  
@@ -66,15 +66,14 @@ splt.raster(spike_data[:, 0].view(100, -1), ax, s=25, c="black")
 plt.title(f"Spike Train of Sneaker")
 plt.xlabel("Time step")
 plt.ylabel("Neuron Number")
-plt.savefig("SpikeTrainOfSneaker.png")
+# plt.savefig("SpikeTrainOfSneaker.png")
 plt.show()
 
 spike_data_sample = spike_data[:, 0]
 fig, ax = plt.subplots()
-anim = splt.animator(spike_data_sample, fig, ax)
+anim = splt.animator(spike_data_sample, fig, ax, 20, 500)
 
 anim.save("SneakerSpikes.gif")
-
 
 # Min, max, and mean has been double checked with matlab values and are essentially the same. 
 # genLGNActivityMaps has been double checked to make sure it's convolving images, and keeping labels the same
@@ -84,3 +83,13 @@ anim.save("SneakerSpikes.gif")
 # So there's two options, we can either do the image augmentation through keeping everything a tensor, create a 
 # DoG kernel in the form of a tensor that we can use pytorch.functional.nn conv2d function on 
 # Then compare those final results to the tensor you produced before and checked against the matlab functions 
+
+num_inputs = 28*28
+num_hidden = 1000
+num_outputs = 10
+
+num_steps = 25
+beta = 0.95
+
+batch_size = 100
+epochs = 5
