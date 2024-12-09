@@ -85,6 +85,8 @@ anim = splt.animator(spike_data_sample, fig, ax, 20, 500)
 # DoG kernel in the form of a tensor that we can use pytorch.functional.nn conv2d function on 
 # Then compare those final results to the tensor you produced before and checked against the matlab functions 
 
+# Need to create leakey neurons and set up my own STDP learning rules explained in the paper
+
 num_inputs = 28*28
 num_hidden = 1000
 num_outputs = 10
@@ -217,3 +219,5 @@ plt.legend(["Train Loss", "Test Loss"])
 plt.xlabel("Iteration")
 plt.ylabel("Loss")
 plt.show()
+
+
