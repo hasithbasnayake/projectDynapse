@@ -6,6 +6,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import convolve2d
 
+def data_preprocessing(training_set):
+  return None
+
 class dogKernel:
   def __init__(self, dim, ang, ppa, ctr, sur):
     """
