@@ -1,4 +1,6 @@
+import os
 import torch
+from torchvision import datasets
 from torchvision import transforms 
 import snntorch as snn
 from scipy.signal import convolve2d
@@ -6,7 +8,25 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import convolve2d
 
-def data_preprocessing(dataset, kernel_params, random):
+def data_preprocessing(dataset, file_path, kernel_params, random):
+  print("Function running")
+  if dataset != "FashionMNIST":
+    return "Currently only compatible with FashionMNIST"
+
+  if os.path.exists(file_path):
+    print("Datasets already downloaded\n")
+  else:
+    print("Downloading raw datasets\n")
+    raw_train_set = datasets.FashionMNIST(root=file_path, train=True, download=True, transform=None)
+    raw_test_set = datasets.FashionMNIST(root=file_path, train=False, donwload=True, transform=None)
+
+  if os.path.exists(file_path):
+    print("Datasets already split into training and test set")
+  else:
+    print("Splitting datasets to train and test set")
+  
+  
+
   return None
 
 class dogKernel:
