@@ -8,15 +8,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import convolve2d
 
-def data_preprocessing(dataset, file_path, kernel_params, random):
+def data_preprocessing(dataset, file_path, train_params, kernel_params):
+
   print("Function running")
   if dataset != "FashionMNIST":
     return "Currently only compatible with FashionMNIST"
 
   if os.path.exists(file_path):
-    print("Datasets already downloaded\n")
+    print("Datasets already downloaded")
   else:
-    print("Downloading raw datasets\n")
+    print("Downloading raw datasets")
     raw_train_set = datasets.FashionMNIST(root=file_path, train=True, download=True, transform=None)
     raw_test_set = datasets.FashionMNIST(root=file_path, train=False, donwload=True, transform=None)
 
@@ -24,8 +25,8 @@ def data_preprocessing(dataset, file_path, kernel_params, random):
     print("Datasets already split into training and test set")
   else:
     print("Splitting datasets to train and test set")
-  
-  
+    split_train_set, split_test_set = split_sets(raw_train_set, raw_test_set, train_params)
+
 
   return None
 
@@ -120,24 +121,26 @@ class dogKernel:
     plt.show()
 
 
-def createTrainingTestingSets(training_images, testing_images, num_train_samples, num_test_samples, rng):
+def split_sets(raw_train_set, raw_test_set, train_params):
+
+  num_train_samples, num_test_samples, random_seed = train_params
 
   # training_set = utils.data_subset(training_images, num_train_samples)
   # testing_set = utils.data_subset(testing_images, num_test_samples)
   
-  train_idx = rng.choice(len(training_images), num_train_samples, replace=False)
-  test_idx = rng.choice(len(testing_images), num_test_samples, replace=False)
+  train_idx = random_seed.choice(len(raw_train_set), num_train_samples, replace=False)
+  test_idx = random_seed.choice(len(raw_test_set), num_test_samples, replace=False)
 
-  training_set = []
-  testing_set = [] 
+  split_train_set = []
+  split_test_set = [] 
 
   for idx in train_idx:
-    training_set.append(training_images[idx])
+    split_train_set.append(raw_train_set[idx])
   
   for idx in test_idx:
-    testing_set.append(testing_images[idx])
+    split_test_set.append(raw_test_set[idx])
 
-  return training_set, testing_set
+  return split_train_set, split_test_set
 
 def dataAnalysis(dataset):
 
