@@ -8,24 +8,50 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import convolve2d
 
-def data_preprocessing(dataset, file_path, train_params, kernel_params):
+def data_preprocessing(dataset, dir, train_params, kernel_params):
 
-  print("Function running")
+  # The function should check if the data directory exists in the file tree
+  # If it doesn't, create the folder "data", with subfolders "processed", "raw", and "split"
+  # Run datasets.FashionMNIST with the dir + "raw", the datasets method will avoid downloading 
+  # the file if it has already been downloaded, so you don't have to do anything 
+  # Look for a split_params file within dir + "split"
+  # If the split_params file exists, read the split present 
+
+  print("Running data_preprocessing function")
   if dataset != "FashionMNIST":
-    return "Currently only compatible with FashionMNIST"
-
-  if os.path.exists(file_path):
+    print("ERROR: Currently only compatible with FashionMNIST")
+    return None
+  
+  if os.path.exists(dir):
     print("Datasets already downloaded")
   else:
-    print("Downloading raw datasets")
-    raw_train_set = datasets.FashionMNIST(root=file_path, train=True, download=True, transform=None)
-    raw_test_set = datasets.FashionMNIST(root=file_path, train=False, donwload=True, transform=None)
+    print("Creating directory")
+    os.mkdir(dir)
+    os.mkdir(dir + '/' + 'raw')
+    os.mkdir(dir + '/' + 'split')
+    os.mkdir(dir + '/' + 'processed')
+    
 
-  if os.path.exists(file_path):
-    print("Datasets already split into training and test set")
-  else:
-    print("Splitting datasets to train and test set")
-    split_train_set, split_test_set = split_sets(raw_train_set, raw_test_set, train_params)
+
+
+  # print("Function running")
+  # if dataset != "FashionMNIST":
+  #   return "Currently only compatible with FashionMNIST"
+
+  # if os.path.exists(file_path):
+  #   print("Datasets already downloaded")
+  # else:
+  #   print("Downloading raw datasets")
+  #   raw_train_set = datasets.FashionMNIST(root=file_path, train=True, download=True, transform=None)
+  #   raw_test_set = datasets.FashionMNIST(root=file_path, train=False, donwload=True, transform=None)
+
+  # if os.path.exists(file_path):
+  #   print("Datasets already split into training and test set")
+  # else:
+  #   print("Splitting datasets to train and test set")
+  #   split_train_set, split_test_set = split_sets(raw_train_set, raw_test_set, train_params)
+
+  
 
 
   return None

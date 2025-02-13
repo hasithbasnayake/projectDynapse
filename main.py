@@ -14,7 +14,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from func import *
 
-data_preprocessing('FashionMNIST','./data/raw', None, None)
+data_preprocessing('FashionMNIST','data', None, None)
 
 # dim = np.array([6, 6])  # kernel dimensions (in pixels)
 # ppa = np.array([8, 8])  # pixels per arc (scaling factor)
