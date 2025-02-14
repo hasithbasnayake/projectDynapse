@@ -14,13 +14,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 from func import *
 
-data_preprocessing('FashionMNIST','data', (1000,200,2021), None)
 
-# dim = np.array([6, 6])  # kernel dimensions (in pixels)
-# ppa = np.array([8, 8])  # pixels per arc (scaling factor)
-# ang = np.ceil(dim / ppa)  # angular size based on pixels per arc
-# ctr = (1/3) * dim[0]  # center size as a fraction of kernel size
-# sur = (2/3) * dim[0]  # surround size as a fraction of kernel size
+dim = np.array([6, 6])  # kernel dimensions (in pixels)
+ppa = np.array([8, 8])  # pixels per arc (scaling factor)
+ang = np.ceil(dim / ppa)  # angular size based on pixels per arc
+ctr = (1/3) * dim[0]  # center size as a fraction of kernel size
+sur = (2/3) * dim[0]  # surround size as a fraction of kernel size
+
+
+split_params = (1000,200,2021)
+kernel_params = (dim, ppa, ang, ctr, sur)
+
+data_preprocessing('FashionMNIST','data', split_params, kernel_params)
 
 # kernelON = dogKernel(dim = dim, ang = ang, ppa = ppa, ctr = ctr, sur = sur)
 # kernelOFF = dogKernel(dim = dim, ang = ang, ppa = ppa, ctr = ctr, sur = sur)

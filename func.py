@@ -47,14 +47,24 @@ def data_preprocessing(dataset, dir, split_params, kernel_params):
   torch.save(split_train, dir + '/' + 'split' + '/' + 'train.pt')
   torch.save(split_test, dir + '/' + 'split' + '/' + 'test.pt')
 
+  img = type(split_train[0][0])
+  
+  if img.ndim == 3:
+    print("3D")
+  
+
+
   dim, ang, ppa, ctr, sur = kernel_params
 
   ON_kernel = DOG_kernel(dim, ang, ppa, ctr, sur)
   OFF_kernel = DOG_kernel(dim, ang, ppa, ctr, sur)
 
-  ON_kernel.setFilterCoefficients(ONOFF="ON")
-  OFF_kernel.setFilterCoefficients(ONOFF="OFF")
+  ON_kernel.set_filter_coefficients(ONOFF="ON")
+  OFF_kernel.set_filter_coefficients(ONOFF="OFF")
 
+  # gen_LGA_activity_maps(split_train, ON_kernel, debug=True)
+
+  
   
   return None
 
@@ -70,7 +80,7 @@ class DOG_kernel:
     :param ang: Kernel dimensions in angular units (used for scaling or angular representation).
     :param ctr: Size of the center within the kernel (in pixels).
     :param sur: Size of the surround within the kernel (in pixels).
-    :object kernel: The actual kernel itself, an np.array set with setFilterCoefficients
+    :object kernel: The actual kernel itself, an np.array set with set_filter_coefficients
     """
     self.dim = dim
     self.ang = ang
@@ -82,7 +92,7 @@ class DOG_kernel:
   def __str__(self):
     return f"___________________________\nKernel:\n{self.kernel}\nKernel Size: {np.shape(self.kernel)}\nKernel Center: {self.ctr}\nSurround Center: {self.sur}"
 
-  def setFilterCoefficients(self, ONOFF):
+  def set_filter_coefficients(self, ONOFF):
     """
     Sets the filter coefficents of the dogKernel using the dogKernel's attributes (dim, ang, ctr, sur)
     :param self:
@@ -121,7 +131,7 @@ class DOG_kernel:
     h /= h.sum()  # Normalize to sum to 1
     return h
   
-  def displayKernel(self, show_plt=True, show_hist=True, show_img=True):
+  def display_kernel(self, show_plt=True, show_hist=True, show_img=True):
     """
     Kernel display function
     :param plt: toggle pyplot (bool)
@@ -150,7 +160,6 @@ class DOG_kernel:
 
     plt.show()
 
-
 def split_sets(raw_train, raw_test, split_params):
 
   n_train, n_test, r_seed = split_params
@@ -173,7 +182,7 @@ def split_sets(raw_train, raw_test, split_params):
 
   return split_train, split_test
 
-def dataAnalysis(dataset):
+def data_analysis(dataset):
 
   labels = ["T-shirt/top", "Trouser", "Pullover", "Dress", "Coat", "Sandal", "Shirt", "Sneaker", "Bag", "Ankle Boot"]
   px_val = []
@@ -199,10 +208,9 @@ def dataAnalysis(dataset):
 
   return results_dict
 
-def genLGNActivityMaps(data, DoGkernel, debug=False):
+def gen_LGA_activity_maps(data, DoGkernel, debug=False):
   kernel = DoGkernel
   convolved_dataset = []
-
 
   for curr in data:
     img, label = curr
