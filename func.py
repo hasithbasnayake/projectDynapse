@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import convolve2d
 
-def data_preprocessing(dataset, dir, train_params, kernel_params):
+def data_preprocessing(dataset, dir, split_params, kernel_params):
 
   # The function should check if the data directory exists in the file tree
   # If it doesn't, create the folder "data", with subfolders "processed", "raw", and "split"
@@ -23,38 +23,47 @@ def data_preprocessing(dataset, dir, train_params, kernel_params):
     return None
   
   if os.path.exists(dir):
-    print("Datasets already downloaded")
+    print("Directory already exists")
   else:
     print("Creating directory")
     os.mkdir(dir)
     os.mkdir(dir + '/' + 'raw')
     os.mkdir(dir + '/' + 'split')
+    open(dir + '/' + 'split' + '/' + 'split_params.txt', 'x')
     os.mkdir(dir + '/' + 'processed')
-    
+    open(dir + '/' + 'processed' + '/' + 'processed_params.txt', 'x')
 
+  raw_train = datasets.FashionMNIST(root=dir + '/' + 'raw', train=True, download=True, transform=None)
+  raw_test = datasets.FashionMNIST(root=dir + '/' + 'raw', train=False, download=True, transform=None)
 
+  n_train, n_test, r_seed = split_params 
 
-  # print("Function running")
-  # if dataset != "FashionMNIST":
-  #   return "Currently only compatible with FashionMNIST"
+  with open(dir + '/' + 'split' + '/' + 'split_params.txt', 'w') as s:
+    s.write(f"{n_train}\n")
+    s.write(f"{n_test}\n")
+    s.write(f"{r_seed}\n")
 
-  # if os.path.exists(file_path):
-  #   print("Datasets already downloaded")
-  # else:
-  #   print("Downloading raw datasets")
-  #   raw_train_set = datasets.FashionMNIST(root=file_path, train=True, download=True, transform=None)
-  #   raw_test_set = datasets.FashionMNIST(root=file_path, train=False, donwload=True, transform=None)
+  split_train, split_test = split_sets(raw_train, raw_test, split_params)
+  torch.save(split_train, dir + '/' + 'split' + '/' + 'train.pt')
+  torch.save(split_test, dir + '/' + 'split' + '/' + 'test.pt')
 
-  # if os.path.exists(file_path):
-  #   print("Datasets already split into training and test set")
-  # else:
-  #   print("Splitting datasets to train and test set")
-  #   split_train_set, split_test_set = split_sets(raw_train_set, raw_test_set, train_params)
+  # dim = np.array([6, 6])  # kernel dimensions (in pixels)
+  # ppa = np.array([8, 8])  # pixels per arc (scaling factor)
+  # ang = np.ceil(dim / ppa)  # angular size based on pixels per arc
+  # ctr = (1/3) * dim[0]  # center size as a fraction of kernel size
+  # sur = (2/3) * dim[0]  # surround size as a fraction of kernel size
+
+  # kernelON = dogKernel(dim = dim, ang = ang, ppa = ppa, ctr = ctr, sur = sur)
+  # kernelOFF = dogKernel(dim = dim, ang = ang, ppa = ppa, ctr = ctr, sur = sur)
+
+  # kernelON.setFilterCoefficients(ONOFF="ON")
+  # kernelOFF.setFilterCoefficients(ONOFF="OFF")
 
   
-
-
   return None
+
+
+
 
 class dogKernel:
   def __init__(self, dim, ang, ppa, ctr, sur):
@@ -147,26 +156,27 @@ class dogKernel:
     plt.show()
 
 
-def split_sets(raw_train_set, raw_test_set, train_params):
+def split_sets(raw_train, raw_test, split_params):
 
-  num_train_samples, num_test_samples, random_seed = train_params
+  n_train, n_test, r_seed = split_params
+  r_seed = np.random.default_rng(r_seed)
 
   # training_set = utils.data_subset(training_images, num_train_samples)
   # testing_set = utils.data_subset(testing_images, num_test_samples)
   
-  train_idx = random_seed.choice(len(raw_train_set), num_train_samples, replace=False)
-  test_idx = random_seed.choice(len(raw_test_set), num_test_samples, replace=False)
+  train_idx = r_seed.choice(len(raw_train), n_train, replace=False)
+  test_idx = r_seed.choice(len(raw_test), n_test, replace=False)
 
-  split_train_set = []
-  split_test_set = [] 
+  split_train = []
+  split_test = [] 
 
   for idx in train_idx:
-    split_train_set.append(raw_train_set[idx])
+    split_train.append(raw_train[idx])
   
   for idx in test_idx:
-    split_test_set.append(raw_test_set[idx])
+    split_test.append(raw_test[idx])
 
-  return split_train_set, split_test_set
+  return split_train, split_test
 
 def dataAnalysis(dataset):
 
