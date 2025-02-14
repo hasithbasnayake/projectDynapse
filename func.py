@@ -47,17 +47,13 @@ def data_preprocessing(dataset, dir, split_params, kernel_params):
   torch.save(split_train, dir + '/' + 'split' + '/' + 'train.pt')
   torch.save(split_test, dir + '/' + 'split' + '/' + 'test.pt')
 
-  # dim = np.array([6, 6])  # kernel dimensions (in pixels)
-  # ppa = np.array([8, 8])  # pixels per arc (scaling factor)
-  # ang = np.ceil(dim / ppa)  # angular size based on pixels per arc
-  # ctr = (1/3) * dim[0]  # center size as a fraction of kernel size
-  # sur = (2/3) * dim[0]  # surround size as a fraction of kernel size
+  dim, ang, ppa, ctr, sur = kernel_params
 
-  # kernelON = dogKernel(dim = dim, ang = ang, ppa = ppa, ctr = ctr, sur = sur)
-  # kernelOFF = dogKernel(dim = dim, ang = ang, ppa = ppa, ctr = ctr, sur = sur)
+  ON_kernel = DOG_kernel(dim, ang, ppa, ctr, sur)
+  OFF_kernel = DOG_kernel(dim, ang, ppa, ctr, sur)
 
-  # kernelON.setFilterCoefficients(ONOFF="ON")
-  # kernelOFF.setFilterCoefficients(ONOFF="OFF")
+  ON_kernel.setFilterCoefficients(ONOFF="ON")
+  OFF_kernel.setFilterCoefficients(ONOFF="OFF")
 
   
   return None
@@ -65,7 +61,7 @@ def data_preprocessing(dataset, dir, split_params, kernel_params):
 
 
 
-class dogKernel:
+class DOG_kernel:
   def __init__(self, dim, ang, ppa, ctr, sur):
     """
     Creates a dogKernel object representing a kernel with passed overall, centre, and surround dimensions.
@@ -110,7 +106,6 @@ class dogKernel:
     input_max = 1
 
     self.kernel = self.kernel / (np.sum(np.abs(self.kernel)) / 2) * (input_max - input_min)
-
 
   def gen_gaussian_kernel(self, shape, sigma):
     """
