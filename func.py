@@ -33,8 +33,9 @@ def data_preprocessing(dataset, dir, split_params, kernel_params):
     os.mkdir(dir + '/' + 'processed')
     open(dir + '/' + 'processed' + '/' + 'processed_params.txt', 'x')
 
-  raw_train = datasets.FashionMNIST(root=dir + '/' + 'raw', train=True, download=True, transform=None)
-  raw_test = datasets.FashionMNIST(root=dir + '/' + 'raw', train=False, download=True, transform=None)
+  # Note that ToTensor automatically scales PIL Images from 0, 255 to 0.0 to 1.0
+  raw_train = datasets.FashionMNIST(root=dir + '/' + 'raw', train=True, download=True, transform=transforms.ToTensor(),) 
+  raw_test = datasets.FashionMNIST(root=dir + '/' + 'raw', train=False, download=True, transform=transforms.ToTensor(),)
 
   n_train, n_test, r_seed = split_params 
 
@@ -46,14 +47,7 @@ def data_preprocessing(dataset, dir, split_params, kernel_params):
   split_train, split_test = split_sets(raw_train, raw_test, split_params)
   torch.save(split_train, dir + '/' + 'split' + '/' + 'train.pt')
   torch.save(split_test, dir + '/' + 'split' + '/' + 'test.pt')
-
-  img = type(split_train[0][0])
   
-  if img.ndim == 3:
-    print("3D")
-  
-
-
   dim, ang, ppa, ctr, sur = kernel_params
 
   ON_kernel = DOG_kernel(dim, ang, ppa, ctr, sur)
@@ -62,7 +56,7 @@ def data_preprocessing(dataset, dir, split_params, kernel_params):
   ON_kernel.set_filter_coefficients(ONOFF="ON")
   OFF_kernel.set_filter_coefficients(ONOFF="OFF")
 
-  # gen_LGA_activity_maps(split_train, ON_kernel, debug=True)
+  gen_LGA_activity_maps(split_train, ON_kernel, debug=True)
 
   
   
@@ -165,9 +159,6 @@ def split_sets(raw_train, raw_test, split_params):
   n_train, n_test, r_seed = split_params
   r_seed = np.random.default_rng(r_seed)
 
-  # training_set = utils.data_subset(training_images, num_train_samples)
-  # testing_set = utils.data_subset(testing_images, num_test_samples)
-  
   train_idx = r_seed.choice(len(raw_train), n_train, replace=False)
   test_idx = r_seed.choice(len(raw_test), n_test, replace=False)
 
