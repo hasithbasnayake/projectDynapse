@@ -1,5 +1,6 @@
 import os
 import torch
+from torch.nn.functional import conv2d
 from torchvision import datasets
 from torchvision import transforms 
 import snntorch as snn
@@ -33,7 +34,7 @@ def data_preprocessing(dataset, dir, split_params, kernel_params):
     os.mkdir(dir + '/' + 'processed')
     open(dir + '/' + 'processed' + '/' + 'processed_params.txt', 'x')
 
-  # Note that ToTensor automatically scales PIL Images from 0, 255 to 0.0 to 1.0
+  # Note that transforms.ToTensor() automatically scales PIL Images from 0, 255 to 0.0 to 1.0
   raw_train = datasets.FashionMNIST(root=dir + '/' + 'raw', train=True, download=True, transform=transforms.ToTensor(),) 
   raw_test = datasets.FashionMNIST(root=dir + '/' + 'raw', train=False, download=True, transform=transforms.ToTensor(),)
 
@@ -56,13 +57,41 @@ def data_preprocessing(dataset, dir, split_params, kernel_params):
   ON_kernel.set_filter_coefficients(ONOFF="ON")
   OFF_kernel.set_filter_coefficients(ONOFF="OFF")
 
+
+  # t_kernel = torch.from_numpy(ON_kernel.kernel)
+  # first_train = split_train[0][0]
+
+  # image_tensors = [item[0] for item in split_train]
+  # batch_images = torch.stack(image_tensors)
+  # t_kernel = t_kernel.unsqueeze(0).unsqueeze(0).float()
+
+  # print(t_kernel.size())
+  # print(t_kernel.dtype)
+  # print(batch_images.dtype)
+  # print(batch_images.size)
+  # print(first_train.size())
+
+  # conv_result = conv2d(batch_images, t_kernel, padding=2)
+
+
   gen_LGA_activity_maps(split_train, ON_kernel, debug=True)
 
   
   
   return None
 
+def gen_LGA_activity_maps(split_set, DOG_Kernel, debug=False):
+  kernel = torch.from_numpy(DOG_Kernel.kernel).unsqueeze(0).unsqueeze(0).float()
+  image_tensors = torch.stack([item[0] for item in split_set])
 
+  conv_result = conv2d(image_tensors, kernel, padding=0) #Check padding against other OLD function 
+  conv_result = torch.clamp(conv_result, 0, None)
+
+  conv_set = []
+  conv_set.append([(item[1], conv_result[i]) for i, item in enumerate(split_set)])
+
+  return conv_set
+    
 
 
 class DOG_kernel:
@@ -199,7 +228,7 @@ def data_analysis(dataset):
 
   return results_dict
 
-def gen_LGA_activity_maps(data, DoGkernel, debug=False):
+def OLD_gen_LGA_activity_maps(data, DoGkernel, debug=False):
   kernel = DoGkernel
   convolved_dataset = []
 
