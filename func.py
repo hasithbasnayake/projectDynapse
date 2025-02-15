@@ -57,27 +57,30 @@ def data_preprocessing(dataset, dir, split_params, kernel_params):
   ON_kernel.set_filter_coefficients(ONOFF="ON")
   OFF_kernel.set_filter_coefficients(ONOFF="OFF")
 
-
-  # t_kernel = torch.from_numpy(ON_kernel.kernel)
-  # first_train = split_train[0][0]
-
-  # image_tensors = [item[0] for item in split_train]
-  # batch_images = torch.stack(image_tensors)
-  # t_kernel = t_kernel.unsqueeze(0).unsqueeze(0).float()
-
-  # print(t_kernel.size())
-  # print(t_kernel.dtype)
-  # print(batch_images.dtype)
-  # print(batch_images.size)
-  # print(first_train.size())
-
-  # conv_result = conv2d(batch_images, t_kernel, padding=2)
-
-
   gen_LGA_activity_maps(split_train, ON_kernel, debug=True)
+  OLD_gen_LGA_activity_maps(split_train, ON_kernel, debug=True)
 
+  # print(f"Length of new dataset: {len(split_train)}")
+  # print(f"Type of new dataset: {type(split_train)}")
+  # print(f"Type of new dataset element: {type(split_train[0])}")
+  # print(f"Type of new dataset element first element: {type(split_train[0][0])}")
+  # print(f"Type of new dataset element second element: {type(split_train[0][1])}")
   
-  
+  # # Extract images and labels
+  # images = [curr[0] for curr in split_train]
+  # labels = [curr[1] for curr in split_train]
+
+  # # Convert images and labels to tensors for min/max calculation
+  # all_images = torch.stack(images)  # Stack all images into a single tensor
+  # all_labels = torch.tensor(labels)  # Convert labels into a tensor if they are integers
+
+  # print(f"Min of new dataset element first element: {torch.min(all_images)}")
+  # print(f"Max of new dataset element first element: {torch.max(all_images)}")
+  # print(f"Min of new dataset element second element: {torch.min(all_labels)}")
+  # print(f"Max of new dataset element second element: {torch.max(all_labels)}")
+
+
+
   return None
 
 def gen_LGA_activity_maps(split_set, DOG_Kernel, debug=False):
@@ -88,10 +91,33 @@ def gen_LGA_activity_maps(split_set, DOG_Kernel, debug=False):
   conv_result = torch.clamp(conv_result, 0, None)
 
   conv_set = []
-  conv_set.append([(item[1], conv_result[i]) for i, item in enumerate(split_set)])
+
+  for idx, img in enumerate(conv_result):
+    conv_set.append((img, split_set[idx][1]))
+
+  if debug:
+      # Debug statements
+
+      print(f"Length of new dataset: {len(conv_set)}")
+      print(f"Type of new dataset: {type(conv_set)}")
+      print(f"Type of new dataset element: {type(conv_set[0])}")
+      print(f"Type of new dataset element first element: {type(conv_set[0][0])}")
+      print(f"Type of new dataset element second element: {type(conv_set[0][1])}")
+      
+      # Extract images and labels
+      images = [curr[0] for curr in conv_set]
+      labels = [curr[1] for curr in conv_set]
+
+      # Convert images and labels to tensors for min/max calculation
+      all_images = torch.stack(images)  # Stack all images into a single tensor
+      all_labels = torch.tensor(labels)  # Convert labels into a tensor if they are integers
+
+      print(f"Min of new dataset element first element: {torch.min(all_images)}")
+      print(f"Max of new dataset element first element: {torch.max(all_images)}")
+      print(f"Min of new dataset element second element: {torch.min(all_labels)}")
+      print(f"Max of new dataset element second element: {torch.max(all_labels)}")
 
   return conv_set
-    
 
 
 class DOG_kernel:
@@ -229,12 +255,13 @@ def data_analysis(dataset):
   return results_dict
 
 def OLD_gen_LGA_activity_maps(data, DoGkernel, debug=False):
-  kernel = DoGkernel
+  kernel = DoGkernel.kernel
   convolved_dataset = []
 
   for curr in data:
     img, label = curr
     img = np.array(img) # Convert to np.array
+    img = img[0]
     img = convolve2d(img, kernel, mode="same") # Apply DoG Kernel
     img = np.clip(img, 0, None) # Clip negative values 
     new_tuple = (img, label) # Create tuple 
