@@ -46,10 +46,17 @@ def data_preprocessing(dataset, dir, split_params, kernel_params):
     s.write(f"{r_seed}\n")
 
   split_train, split_test = split_sets(raw_train, raw_test, split_params)
-  torch.save(split_train, dir + '/' + 'split' + '/' + 'train.pt')
-  torch.save(split_test, dir + '/' + 'split' + '/' + 'test.pt')
+  torch.save(split_train, dir + '/' + 'split' + '/' + 'split_train.pt')
+  torch.save(split_test, dir + '/' + 'split' + '/' + 'split_test.pt')
   
   dim, ang, ppa, ctr, sur = kernel_params
+
+  with open(dir + '/' + 'processed' + '/' + 'processed_params.txt', 'w') as s:
+    s.write(f"{dim}\n")
+    s.write(f"{ang}\n")
+    s.write(f"{ppa}\n")
+    s.write(f"{ctr}\n")
+    s.write(f"{sur}\n")
 
   ON_kernel = DOG_kernel(dim, ang, ppa, ctr, sur)
   OFF_kernel = DOG_kernel(dim, ang, ppa, ctr, sur)
@@ -57,8 +64,17 @@ def data_preprocessing(dataset, dir, split_params, kernel_params):
   ON_kernel.set_filter_coefficients(ONOFF="ON")
   OFF_kernel.set_filter_coefficients(ONOFF="OFF")
 
-  gen_LGA_activity_maps(split_train, ON_kernel, debug=True)
-  OLD_gen_LGA_activity_maps(split_train, ON_kernel, debug=True)
+  conv_train = gen_LGA_activity_maps(split_train, ON_kernel, debug=False)
+  conv_test = gen_LGA_activity_maps(split_test, OFF_kernel, debug=False)
+
+  torch.save(conv_train, dir + '/' + 'processed' + '/' + 'conv_train.pt')
+  torch.save(conv_test, dir + '/' + 'processed' + '/' + 'conv_test.pt')
+
+  
+
+
+  # gen_LGA_activity_maps(split_train, ON_kernel, debug=True)
+  # OLD_gen_LGA_activity_maps(split_train, ON_kernel, debug=True)
 
   # print(f"Length of new dataset: {len(split_train)}")
   # print(f"Type of new dataset: {type(split_train)}")
