@@ -24,7 +24,9 @@ sur = (2/3) * dim[0]  # surround size as a fraction of kernel size
 split_params = (1000,200,2021)
 kernel_params = (dim, ppa, ang, ctr, sur)
 
-data_preprocessing('FashionMNIST','data', split_params, kernel_params)
+train_set, test_set = data_preprocessing('FashionMNIST','data', split_params, kernel_params)
+
+
 
 
 # tensor_dataset = convertToTensor(ON_training_set)
