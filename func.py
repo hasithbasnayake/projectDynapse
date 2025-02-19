@@ -64,13 +64,16 @@ def data_preprocessing(dataset, dir, split_params, kernel_params):
   ON_kernel.set_filter_coefficients(ONOFF="ON")
   OFF_kernel.set_filter_coefficients(ONOFF="OFF")
 
+  # I believe both the conv_train and conv_test set need to be produced by convolving with the ON and OFF kernel
+  # You'll need to refer to the paper for that information
+
   conv_train = gen_LGA_activity_maps(split_train, ON_kernel, debug=False)
   conv_test = gen_LGA_activity_maps(split_test, OFF_kernel, debug=False)
 
   torch.save(conv_train, dir + '/' + 'processed' + '/' + 'conv_train.pt')
   torch.save(conv_test, dir + '/' + 'processed' + '/' + 'conv_test.pt')
 
-  return conv_test, conv_train
+  return conv_train, conv_test 
 
 
   # gen_LGA_activity_maps(split_train, ON_kernel, debug=True)
