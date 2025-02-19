@@ -26,6 +26,35 @@ kernel_params = (dim, ppa, ang, ctr, sur)
 
 data_preprocessing('FashionMNIST','data', split_params, kernel_params)
 
+# kernelON = dogKernel(dim = dim, ang = ang, ppa = ppa, ctr = ctr, sur = sur)
+# kernelOFF = dogKernel(dim = dim, ang = ang, ppa = ppa, ctr = ctr, sur = sur)
+
+# kernelON.setFilterCoefficients(ONOFF="ON")
+# kernelOFF.setFilterCoefficients(ONOFF="OFF")
+
+FashionMNISTTrain = datasets.FashionMNIST(root='./data/raw', train=True, download=True, transform=None)
+FashionMNISTTest = datasets.FashionMNIST(root='./data/raw', train=False, download=True, transform=None)
+
+# num_train_samples = 1000
+# num_test_samples = 200
+# rng = np.random.default_rng(2021)
+
+# training_set, testing_set = createTrainingTestingSets(training_images = FashionMNISTTrain, testing_images = FashionMNISTTest, num_train_samples = num_train_samples, num_test_samples = num_test_samples, rng=rng)
+
+# full_set_analysis = dataAnalysis(training_set + testing_set)
+# training_set_analysis = dataAnalysis(training_set)
+# testing_set_analysis = dataAnalysis(testing_set)
+
+# # plt.title("Unaltered Sneaker")
+# # plt.imshow(training_set[0][0], cmap="grey")
+# # # plt.savefig("UnalteredSneaker.png")
+
+# ON_training_set = genLGNActivityMaps(training_set, kernelON.kernel, False)
+# OFF_training_set = genLGNActivityMaps(training_set, kernelON.kernel, False)
+
+# # plt.title("Activity Map Sneaker")
+# # plt.imshow(ON_training_set[0][0], cmap="grey")
+# # # plt.savefig("ActivityMapSneaker.png")
 
 # tensor_dataset = convertToTensor(ON_training_set)
 

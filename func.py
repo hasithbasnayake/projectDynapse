@@ -70,7 +70,7 @@ def data_preprocessing(dataset, dir, split_params, kernel_params):
   torch.save(conv_train, dir + '/' + 'processed' + '/' + 'conv_train.pt')
   torch.save(conv_test, dir + '/' + 'processed' + '/' + 'conv_test.pt')
 
-  
+  return conv_test, conv_train
 
 
   # gen_LGA_activity_maps(split_train, ON_kernel, debug=True)
