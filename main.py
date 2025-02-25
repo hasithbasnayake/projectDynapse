@@ -34,12 +34,31 @@ data_it, targets_it = next(data) #next(data) receives one batch from train_loade
 
 test_img = data_it[0]
 test_img = test_img.squeeze(0)
-test_img_spike = spikegen.latency(test_img, num_steps = 255, normalize=True, linear=True)
+test_img_spike = spikegen.latency(test_img, num_steps=20, normalize=True, linear=True)
+
+test_img_spike = test_img_spike.numpy().astype(int)
+
+# Initialize dictionary with zero-filled lists
+pixel_dict = {(i+1, j+1): [0] * 20 for i in range(28) for j in range(28)}
+
+# Iterate through time steps and update pixel_dict
+for t, time_step in enumerate(test_img_spike):  # t is the time step index
+    for i in range(28):  # Iterate over rows
+        for j in range(28):  # Iterate over columns
+            if time_step[i, j] == 1:  # Check if a spike occurred at (i, j) at time t
+                pixel_dict[(i+1, j+1)][t] = 1  # Update spike time in the dictionary
+
+# Print first 10 key-value pairs for verification
+for key, value in list(pixel_dict.items()):
+    print(f"{key}: {value}\n")
+
+# print(type(test_img_spike))
+# print(test_img_spike.size())
+# print(test_img_spike.dim())
 
 test_img = test_img.numpy()
 image_array_int = (test_img * 255).astype(int)
 
-# Print row-by-row
 for row in image_array_int:
     print(" ".join(f"{pixel:3}" for pixel in row))  # Align numbers neatly
 
@@ -47,6 +66,10 @@ plt.imshow(test_img, cmap="gray")  # Convert to NumPy and plot
 plt.title(f"Label: {targets_it[0].item()}")  # Display the corresponding label
 plt.axis("off")  # Hide axes
 plt.show()
+
+
+
+
 
 
 
