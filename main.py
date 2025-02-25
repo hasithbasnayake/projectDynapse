@@ -26,6 +26,14 @@ kernel_params = (dim, ppa, ang, ctr, sur)
 
 train_set, test_set = data_preprocessing('FashionMNIST','data', split_params, kernel_params)
 
+train_loader = DataLoader(train_set, batch_size=128, shuffle=True)
+# print(type(train_loader))
+data = iter(train_loader) 
+# print(type(data))
+data_it, targets_it = next(data)  
+# print(type(data_it))
+# print(type(targets_it))
 
 
+spike_data = spikegen.latency(data_it, num_steps=100, tau=5, threshold=0.01)
 
