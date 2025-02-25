@@ -70,7 +70,10 @@ def data_preprocessing(dataset, dir, split_params, kernel_params):
   convON_train = gen_LGA_activity_maps(split_train, ON_kernel, debug=False)
   convOFF_train = gen_LGA_activity_maps(split_train, OFF_kernel, debug=False)
 
-  torch.save(convON_train, dir + '/' + 'processed' + '/' + 'convON.pt')
+  # convON_train = split_train
+  # convOFF_train = split_train
+
+  torch.save(convON_train, dir + '/' + 'processed' + '/' + 'convON_train.pt')
   torch.save(convOFF_train, dir + '/' + 'processed' + '/' + 'convOFF_train.pt')
 
   return convON_train, convOFF_train 
@@ -106,7 +109,7 @@ def gen_LGA_activity_maps(split_set, DOG_Kernel, debug=False):
   kernel = torch.from_numpy(DOG_Kernel.kernel).unsqueeze(0).unsqueeze(0).float()
   image_tensors = torch.stack([item[0] for item in split_set])
 
-  conv_result = conv2d(image_tensors, kernel, padding=0) #Check padding against other OLD function 
+  conv_result = conv2d(image_tensors, kernel, padding='same') #Check padding against other OLD function 
   conv_result = torch.clamp(conv_result, 0, None)
 
   conv_set = []
