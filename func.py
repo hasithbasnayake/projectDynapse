@@ -8,6 +8,7 @@ from scipy.signal import convolve2d
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import convolve2d
+from snntorch import spikegen
 
 def data_preprocessing(dataset, dir, split_params, kernel_params):
 
@@ -101,9 +102,6 @@ def data_preprocessing(dataset, dir, split_params, kernel_params):
   # print(f"Min of new dataset element second element: {torch.min(all_labels)}")
   # print(f"Max of new dataset element second element: {torch.max(all_labels)}")
 
-
-
-  return None
 
 def gen_LGA_activity_maps(split_set, DOG_Kernel, debug=False):
   kernel = torch.from_numpy(DOG_Kernel.kernel).unsqueeze(0).unsqueeze(0).float()
@@ -319,3 +317,48 @@ def convertToTensor(data):
 
   return tensor_dataset
 
+def plot_cur_mem_spk(cur, mem, spk, thr_line=1, ylim_max1=0.5, title="LIF Neuron Response"):
+    fig, axs = plt.subplots(3, 1, figsize=(8, 6), sharex=True)
+
+    # Plot input current
+    axs[0].plot(cur.numpy(), label="Input Current", color='orange')
+    axs[0].set_ylabel("Current (A)")
+    axs[0].legend()
+    axs[0].set_ylim(0, ylim_max1)
+
+    # Plot membrane potential
+    axs[1].plot(mem.numpy(), label="Membrane Potential", color='blue')
+    axs[1].axhline(thr_line, linestyle="--", color="black", label="Threshold")
+    axs[1].set_ylabel("Membrane Voltage (V)")
+    axs[1].legend()
+    axs[1].set_ylim(0, 1.25)
+
+    # Plot spikes as vertical lines
+    spike_times = spk.numpy().nonzero()[0]  # Get the indices where spikes occur
+    axs[2].vlines(spike_times, 0, 1, colors='black', label="Spikes")  # Draw vertical lines at spike times
+    axs[2].set_ylabel("Spikes")
+    axs[2].set_xlabel("Time Steps")
+    axs[2].legend()
+
+    plt.suptitle(title)
+    plt.show()
+
+def convr(data_it, num_steps):
+    img_spikes = spikegen.latency(data_it[0].squeeze(0), num_steps, normalize=True, linear=True)
+    img_spikes = img_spikes.numpy().astype(int)
+
+    pixel_dict = {(i+1, j+1): [0] * num_steps for i in range(28) for j in range(28)}
+
+    for t, time_step in enumerate(img_spikes):
+        for i in range(28):
+            for j in range(28):
+                if time_step[i,j] == 1:
+                    pixel_dict[(i+1, j+1)][t] = 1
+
+    sum_list = [0] * 784
+    for value in pixel_dict.values():
+        sum_list = [x + y for x,y in zip(sum_list, value)]
+    sum_list = torch.tensor(sum_list)
+    print(sum_list)
+
+    return sum_list
