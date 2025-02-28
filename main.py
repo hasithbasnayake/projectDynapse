@@ -66,10 +66,20 @@ plot_cur_mem_spk(l1_cur_in, l1_mem_rec, l1_spk_rec, thr_line = 1, ylim_max1 = 2,
 num_inputs = 784
 num_outputs = 1
 
-fc1 = nn.Linear(num_inputs, num_outputs)
+fc1 = nn.Linear(num_inputs, num_outputs, bias=False)
 lif1 = snn.Leaky(beta=0.8)
+
+with torch.no_grad():
+    fc1.weight.fill_(.31)
 
 mem1 = lif1.init_leaky()
 
 mem1_rec = []
 spk1_rec = []
+
+img_spikes = spikegen.latency(data_it[0].squeeze(0), 255, normalize=True, linear=True)
+img_spikes = img_spikes.view(255, 1, -1)
+
+for step in range(num_steps):
+    None
+
