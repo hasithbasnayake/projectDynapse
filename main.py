@@ -91,3 +91,8 @@ spk1_rec = torch.stack(spk1_rec)
 mem1_rec = mem1_rec.squeeze().detach()
 
 plot_cur_mem_spk(l1_cur_in, l1_mem_rec, l1_spk_rec, mem1_rec, thr_line = 1, ylim_max1 = 2, title="snn.Leaky Neuron Model")
+
+splt.traces(mem1_rec, spk=spk1_rec.squeeze(1))
+fig = plt.gcf()
+fig.set_size_inches(8, 6)
+plt.show()
