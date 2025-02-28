@@ -96,3 +96,8 @@ splt.traces(mem1_rec, spk=spk1_rec.squeeze(1))
 fig = plt.gcf()
 fig.set_size_inches(8, 6)
 plt.show()
+
+# Now implement the full training loop with multiple neurons. STDP is an unsupervised learning rule so
+# you don't need to keep track of accuracy or anything like that, just keep running each iteration till a neuron spikes
+# then move on to the next image 
+# and continue for a certain amount of time till the network is "trained"
