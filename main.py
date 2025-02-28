@@ -45,7 +45,7 @@ l1 = snn.Leaky(beta=0.8, threshold=1, reset_mechanism="zero")
 
 num_steps = 255
 l1_w = 0.31
-l1_cur_in = convr(data_it, num_steps) # Fill in later
+l1_cur_in = convr(data_it, num_steps) * 0.31
 l1_mem = torch.zeros(1)
 l1_spk = torch.zeros(1)
 l1_mem_rec = []
@@ -59,15 +59,13 @@ for step in range(num_steps):
 l1_mem_rec = torch.stack(l1_mem_rec)
 l1_spk_rec = torch.stack(l1_spk_rec)
 
-plot_cur_mem_spk(l1_cur_in, l1_mem_rec, l1_spk_rec, thr_line = 1, ylim_max1 = 2, title="snn.Leaky Neuron Model")
-
 # Network Model
 
 num_inputs = 784
 num_outputs = 1
 
 fc1 = nn.Linear(num_inputs, num_outputs, bias=False)
-lif1 = snn.Leaky(beta=0.8)
+lif1 = snn.Leaky(beta=0.8, threshold=1, reset_mechanism="zero")
 
 with torch.no_grad():
     fc1.weight.fill_(.31)
@@ -81,5 +79,15 @@ img_spikes = spikegen.latency(data_it[0].squeeze(0), 255, normalize=True, linear
 img_spikes = img_spikes.view(255, 1, -1)
 
 for step in range(num_steps):
-    None
+    cur1 = fc1(img_spikes[step])
+    spk1, mem1 = lif1(cur1, mem1)
+    
+    mem1_rec.append(mem1)
+    spk1_rec.append(spk1)
 
+mem1_rec = torch.stack(mem1_rec)
+spk1_rec = torch.stack(spk1_rec)
+
+mem1_rec = mem1_rec.squeeze().detach()
+
+plot_cur_mem_spk(l1_cur_in, l1_mem_rec, l1_spk_rec, mem1_rec, thr_line = 1, ylim_max1 = 2, title="snn.Leaky Neuron Model")
