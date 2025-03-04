@@ -9,6 +9,7 @@ from torch.utils.data import DataLoader
 import torch.nn as nn
 import snntorch as snn
 from snntorch import spikegen
+from snntorch.functional.stdp_learner import stdp_linear_single_step
 import snntorch.spikeplot as splt
 import numpy as np
 import matplotlib.pyplot as plt
@@ -29,15 +30,57 @@ kernel_params = (dim, ppa, ang, ctr, sur)
 
 convON_train, convOFF_train = data_preprocessing('FashionMNIST', 'data', split_params, kernel_params)
 
+# Network Architecture 
+num_inputs = 784
+num_outputs = 40
+
+# Temporal Dynamics 
+num_steps = 255
+beta= 0.95
+
+# Define Network
+
+class Net(nn.Module):
+    def __init__(self):
+        super().__init__()
+
+        # Layer Initialization (1 layer)
+
+        self.fc = nn.Linear(num_inputs, num_outputs, biase=False)
+        self.lif = snn.Leaky(beta=beta, threshold=1, reset_mechanism="zero")
+
+    def forward(self, x):
+
+        mem = self.lif.init_leaky() # Initialize membrane potentials for all neurons to 0, shape = [1, num_outputs]
+
+        spk_rec = [] # Store spike activity over num_steps (time steps), shape = [num_steps, 1, num_outputs]
+        mem_rec = [] # Store membrane potentials over num_steps (time steps), shape = shape = [num_steps, 1, num_outputs]
+
+        for step in range(num_steps):
+            cur = self.fc(x) # Computes input current by weighting input across all weights 
+            spk, mem = self.lif(cur, mem) # Updates mem using the equation defined by leaky-integrate-and-fire neurons, produces a spike if mem for a neuron is above threshold
+
+            spk_rec.append(spk) 
+            mem_rec.append(mem) 
+
+        return torch.stack(spk_rec, dim=0), torch.stack(mem_rec, dim=0)
+
 # Set up data loaders
 
 train_loader = DataLoader(convON_train, batch_size = 128, shuffle=True)
 data = iter(train_loader)
 data_it, targets_it = next(data) #[batch_size = 128, C = 1, H = 28, H = 28]
 
-# Set up a neuron to take in input from 784 neurons 
-# Set up a network model with one neuron to take in input from 784 neurons 
-# The goal is to compare the output of both these after one run to see how they compare 
+# Training Parameters
+
+num_epochs = 1 
+counter = 0
+
+# Training Loop
+
+
+
+fc1 = snn.Linear()
 
 # Neuron Model
 
@@ -45,7 +88,7 @@ l1 = snn.Leaky(beta=0.8, threshold=1, reset_mechanism="zero")
 
 num_steps = 255
 l1_w = 0.31
-l1_cur_in = convr(data_it, num_steps) * 0.31
+l1_cur_in = convr(data_it, num_steps) * l1_w
 l1_mem = torch.zeros(1)
 l1_spk = torch.zeros(1)
 l1_mem_rec = []
@@ -96,6 +139,12 @@ splt.traces(mem1_rec, spk=spk1_rec.squeeze(1))
 fig = plt.gcf()
 fig.set_size_inches(8, 6)
 plt.show()
+
+# Multi-Neuron Model
+
+
+
+
 
 # Now implement the full training loop with multiple neurons. STDP is an unsupervised learning rule so
 # you don't need to keep track of accuracy or anything like that, just keep running each iteration till a neuron spikes
