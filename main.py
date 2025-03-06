@@ -122,7 +122,15 @@ for epoch in range(num_epochs):
                 f_post,
             )
         
-        print(model.fc.weight.data.shape)
-        print(delta_w.shape)
-        
-        model.fc.weight.data += delta_w.squeeze(0)
+        # # Before weight update: Plot weight matrix as an image
+        # plt.imshow(delta_w.squeeze(0).detach().numpy(), cmap='gray', aspect='auto')
+        # plt.show()
+
+        model.fc.weight.data += delta_w.squeeze(0)  # Apply weight update
+
+        # # After weight update: Plot weight matrix as an image
+        # weight_matrix_after = model.fc.weight.data.numpy()  # Convert to numpy for plotting
+        # plt.imshow(weight_matrix_after, cmap='gray', aspect='auto')  # 'gray' for grayscale colormap
+        # plt.colorbar()
+        # plt.title(f"Model Weights After Update (Epoch {epoch+1})")
+        # plt.show()

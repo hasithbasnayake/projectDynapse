@@ -80,8 +80,8 @@ def data_preprocessing(dataset, dir, split_params, kernel_params):
   return convON_train, convOFF_train 
 
 
-  # gen_LGA_activity_maps(split_train, ON_kernel, debug=True)
-  # OLD_gen_LGA_activity_maps(split_train, ON_kernel, debug=True)
+  # # gen_LGA_activity_maps(split_train, ON_kernel, debug=True)
+  # # OLD_gen_LGA_activity_maps(split_train, ON_kernel, debug=True)
 
   # print(f"Length of new dataset: {len(split_train)}")
   # print(f"Type of new dataset: {type(split_train)}")
