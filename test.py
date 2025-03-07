@@ -16,20 +16,6 @@ beta = 0.8
 threshold = 1
 num_steps = 255
 
-# input_image = torch.flatten(torch.randn(24,1,28,28), start_dim=1)
-# print(f"Image Shape: {input_image.shape}")
-
-# ex1 = nn.Linear(28*28, 10, bias=False)
-# print(f"Shape of Weights: {ex1.weight.shape}")
-
-# output = ex1(input_image)
-
-# print(f"Shape of Output: {output.shape}")
-
-# Input Image Shape, [1,784]
-# Weight Shape, [10, 784]
-# Output is going to be [1,10] or [10]
-
 img = torch.rand(1, 1, 28, 28)
 flat_img = torch.flatten(img, start_dim= 1)
 print(f"Shape of Flattened Image: {flat_img.shape}") # [64,784] 64 images, each with 784 pixels
@@ -43,12 +29,13 @@ mem = lif.init_leaky()
 spk_rec = []
 mem_rec = []
 
-# cur = fc1(spike_img)
-# print(f"Shape of cur: {cur.shape}")
+print(f"First dimension of spiking image: {spike_img.shape[0]}")
 
-for step in range(1):
-    cur = fc1(spike_img)
+for step in range(255):
+    cur = fc1(spike_img[step])
+    print(f"Spike_img[step]: {spike_img[step]}")
     print(f"Shape of cur: {cur.shape}")
+    print(f"Cur: {cur}")
 
     spk, mem = lif(cur, mem)
     print(f"Shape of spk: {spk.shape}")
@@ -58,13 +45,12 @@ for step in range(1):
     mem_rec.append(mem)
     print(f"Shape of spk_rec: {len(spk_rec)}")
     print(f"Shape of mem_rec: {len(mem_rec)}")
-    
 
 mem_rec_tensor = torch.stack(mem_rec, dim=0)  # Shape: [255, 10]
 
 x = torch.squeeze(mem_rec_tensor)
 
-list_of_neuron_mem = []
+list_of_neuron_mem = [] 
 
 for neuron in range(x.shape[1]):  
     neuron_mem = x[:, neuron]
