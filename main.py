@@ -22,7 +22,7 @@ ang = np.ceil(dim / ppa)
 ctr = (1/3) * dim[0]
 sur = (2/3) * dim[0]
 
-n_train = 500
+n_train = 1000
 n_test = 200
 r_seed = 2021
 
@@ -38,12 +38,12 @@ convON_train, convOFF_train = data_preprocessing(
 # Network Architecture
 
 num_input = 28*28
-num_output = 10
+num_output = 20
 
 # Spiking Dynamics 
 
-beta = 0.1
-threshold = 0.5
+beta = .7
+threshold = 20
 reset_mechanism = "zero"
 
 # Hyperparameters
@@ -89,8 +89,8 @@ for epoch in range(num_epochs):
             trace_post = trace_post,
             tau_pre = 20,
             tau_post = 20,
-            f_pre = lambda x: x,
-            f_post = lambda x: x,
+            f_pre = lambda x: 5e-3 * x,
+            f_post = lambda x: 3.75e-3 * x,
         )
 
         # print(f"Spikes Input: {spk_img.sum().item()}, Output: {spk_rec.sum().item()}")
@@ -99,6 +99,9 @@ for epoch in range(num_epochs):
         
         with torch.no_grad():
             net.fc1.weight += delta_w
+
+        # print(f"Shape of spk_rec: {spk_rec.shape}")
+        # print(f"Shape of mem_rec: {mem_rec.shape}")
 
         iter_counter += 1
         print(f"Image: {iter_counter}")
@@ -123,15 +126,22 @@ for epoch in range(num_epochs):
     plt.title("STDP Weight Matrix Visualization")
     plt.show()
 
-    fig, axes = plt.subplots(2, 5, figsize=(10, 5))
+    num_neurons = num_output
+    rows = int(np.ceil(num_neurons / 10))  # Adjust rows based on num_output
+    cols = min(10, num_neurons)  # Limit to 10 columns for better visualization
+
+    fig, axes = plt.subplots(rows, cols, figsize=(10, rows * 2))
 
     weights = net.fc1.weight.data.cpu().numpy()
 
     for i, ax in enumerate(axes.flat):
-        img = weights[i].reshape(28, 28)  # Reshape each row into 28x28
-        ax.imshow(img, cmap="viridis")
-        ax.set_title(f"Neuron {i}")
-        ax.axis("off")
+        if i < num_neurons:
+            img = weights[i].reshape(28, 28)  # Reshape each row into 28x28
+            ax.imshow(img, cmap="viridis")
+            ax.set_title(f"Neuron {i}")
+            ax.axis("off")
+        else:
+            ax.axis("off")  # Hide extra subplots
 
     plt.suptitle("Receptive Fields of Output Neurons")
     plt.show()
