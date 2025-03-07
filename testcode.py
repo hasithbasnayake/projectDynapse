@@ -51,3 +51,41 @@ plt.show()
 # plt.title(f"Label: {targets_it[0].item()}")  # Display the corresponding label
 # plt.axis("off")  # Hide axes
 # plt.show()
+
+
+# Check model run against custom functions 
+
+# train_loader = DataLoader(convON_train, batch_size= 1, shuffle=True)
+# img, labels = next(iter(train_loader))
+
+# flat_img = torch.flatten(img, start_dim = 1)
+# spk_img = spikegen.latency(flat_img, num_steps = 255, normalize = True, linear=True)
+
+# model = Net(784, 1, beta = 0.8, threshold = 1, reset_mechanism="zero")
+
+# with torch.no_grad():
+#     model.fc1.weight.fill_(.31)
+#     spk, mem = model(spk_img)
+
+# print(f"Shape of spk: {spk.shape}")
+# print(f"Shape of mem: {mem.shape}")
+
+# plot_cur_mem_spk(spk_img, mem, spk)
+
+# l1 = snn.Leaky(beta=0.8, threshold=1, reset_mechanism="zero")
+
+# l1_cur_in = convr(img, 255) * 0.31
+# l1_mem = torch.zeros(1)
+# l1_spk = torch.zeros(1)
+# l1_mem_rec = []
+# l1_spk_rec = []
+
+# for step in range(255):
+#     l1_spk, l1_mem = l1(l1_cur_in[step], l1_mem)
+#     l1_mem_rec.append(l1_mem)
+#     l1_spk_rec.append(l1_spk)
+
+# l1_mem_rec = torch.stack(l1_mem_rec)
+# l1_spk_rec = torch.stack(l1_spk_rec)
+
+# plot_cur_mem_spk(l1_cur_in, l1_mem_rec, l1_spk_rec)
