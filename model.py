@@ -14,6 +14,8 @@ class Net(nn.Module):
         self.fc1 = nn.Linear(in_features= num_input, out_features = num_output, bias = False)
         self.lif = snn.Leaky(beta = beta, threshold = threshold, reset_mechanism = reset_mechanism)
 
+        torch.nn.init.uniform_(self.fc1.weight, a=0.0, b=1.0)
+
     def forward(self, x):
 
         mem = self.lif.init_leaky()
@@ -25,5 +27,14 @@ class Net(nn.Module):
             spk, mem = self.lif(cur, mem) 
             spk_rec.append(spk)
             mem_rec.append(mem)
+
+            if torch.any(spk): # WTA Inhibition
+                steps_left = x.shape[0] - step - 1
+                # print(f"x.shape[0] ({x.shape[0]}) - step {step} = steps_left {steps_left}")
+
+                spk_rec.extend([torch.zeros_like(spk) for _ in range(steps_left)])
+                mem_rec.extend([torch.zeros_like(mem) for _ in range(steps_left)])
+                break  
+
 
         return torch.stack(spk_rec), torch.stack(mem_rec)
