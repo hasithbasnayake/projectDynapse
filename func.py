@@ -317,35 +317,33 @@ def convertToTensor(data):
 
   return tensor_dataset
 
-def plot_cur_mem_spk(cur, mem, spk, mem2, thr_line=1, ylim_max1=0.5, title="LIF Neuron Response"):
-    fig, axs = plt.subplots(4, 1, figsize=(8, 6), sharex=True)
+def plot_cur_mem_spk(cur, mem, spk, thr_line=1, ylim_max1=0.5, title="LIF Neuron Response"):
+    fig, axs = plt.subplots(3, 1, figsize=(8, 6), sharex=True)
+
+    # Convert tensors to numpy arrays
+    cur_np = cur.detach().numpy().squeeze()
+    mem_np = mem.detach().numpy().squeeze()
+    spk_np = spk.detach().numpy().squeeze()
 
     # Plot input current
-    axs[0].plot(cur.numpy(), label="Input Current", color='orange')
+    axs[0].plot(cur_np, label="Input Current", color='orange')
     axs[0].set_ylabel("Current (A)")
     axs[0].legend()
     axs[0].set_ylim(0, ylim_max1)
 
     # Plot membrane potential
-    axs[1].plot(mem.numpy(), label="Membrane Potential", color='blue')
+    axs[1].plot(mem_np, label="Membrane Potential", color='blue')
     axs[1].axhline(thr_line, linestyle="--", color="black", label="Threshold")
     axs[1].set_ylabel("Membrane Voltage (V)")
     axs[1].legend()
     axs[1].set_ylim(0, 1.25)
 
-    # Plot membrane potential
-    axs[2].plot(mem2.numpy(), label="Membrane Potential", color='blue')
-    axs[2].axhline(thr_line, linestyle="--", color="black", label="Threshold")
-    axs[2].set_ylabel("Membrane Voltage 2 (V)")
-    axs[2].legend()
-    axs[2].set_ylim(0, 1.25)
-
     # Plot spikes as vertical lines
-    spike_times = spk.numpy().nonzero()[0]  # Get the indices where spikes occur
-    axs[3].vlines(spike_times, 0, 1, colors='black', label="Spikes")  # Draw vertical lines at spike times
-    axs[3].set_ylabel("Spikes")
-    axs[3].set_xlabel("Time Steps")
-    axs[3].legend()
+    spike_times = spk_np.nonzero()[0]  # Get indices where spikes occur
+    axs[2].vlines(spike_times, 0, 1, colors='black', label="Spikes")  # Draw vertical lines at spike times
+    axs[2].set_ylabel("Spikes")
+    axs[2].set_xlabel("Time Steps")
+    axs[2].legend()
 
     plt.suptitle(title)
     plt.show()
