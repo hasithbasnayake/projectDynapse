@@ -38,11 +38,11 @@ convON_train, convOFF_train = data_preprocessing(
 # Network Architecture
 
 num_input = 28*28
-num_output = 20
+num_output = 10
 
 # Spiking Dynamics 
 
-beta = .7
+beta = .9
 threshold = 20
 reset_mechanism = "zero"
 
@@ -51,103 +51,80 @@ reset_mechanism = "zero"
 num_epochs = 1
 num_steps = 255
 
-train_loader = DataLoader(convON_train, batch_size= 1, shuffle=True)
+# train_loader = DataLoader(convON_train, batch_size= 1, shuffle=True)
 
-net = Net(num_input, num_output, beta, threshold, reset_mechanism)
-trace_pre = None
-trace_post = None
+# net = Net(num_input, num_output, beta, threshold, reset_mechanism)
+# trace_pre = None
+# trace_post = None
 
-for epoch in range(num_epochs):
-    iter_counter = 0
+# for epoch in range(num_epochs):
+#     iter_counter = 0
 
-    org_weights = net.fc1.weight.data.cpu().numpy()
-    # fig, axes = plt.subplots(2, 5, figsize=(10, 5))
-
-    # weights = net.fc1.weight.data.cpu().numpy()
-
-    # for i, ax in enumerate(axes.flat):
-    #     img = weights[i].reshape(28, 28)  # Reshape each row into 28x28
-    #     ax.imshow(img, cmap="viridis")
-    #     ax.set_title(f"Neuron {i}")
-    #     ax.axis("off")
-
-    # plt.suptitle("Receptive Fields of Output Neurons")
-    # plt.show()
-    
-
-    for img, label in train_loader:
-        flat_img = torch.flatten(img, start_dim=1)
-        spk_img = spikegen.latency(flat_img, num_steps = num_steps, normalize = True, linear= True)
+#     for img, label in train_loader:
+#         flat_img = torch.flatten(img, start_dim=1)
+#         spk_img = spikegen.latency(flat_img, num_steps = num_steps, normalize = True, linear= True)
         
-        spk_rec, mem_rec = net(spk_img)
+#         spk_rec, mem_rec = net(spk_img)
 
-        trace_pre, trace_post, delta_w = stdp_linear_single_step(
-            fc = net.fc1,
-            in_spike = spk_img.squeeze(1),
-            out_spike = spk_rec.squeeze(1),
-            trace_pre = trace_pre,
-            trace_post = trace_post,
-            tau_pre = 20,
-            tau_post = 20,
-            f_pre = lambda x: 5e-3 * x,
-            f_post = lambda x: 3.75e-3 * x,
-        )
+#         trace_pre, trace_post, delta_w = stdp_linear_single_step(
+#             fc = net.fc1,
+#             in_spike = spk_img.squeeze(1),
+#             out_spike = spk_rec.squeeze(1),
+#             trace_pre = trace_pre,
+#             trace_post = trace_post,
+#             tau_pre = 5,
+#             tau_post = 5,
+#             f_pre = lambda x: 5e-3 * x,
+#             f_post = lambda x: 3.75e-3 * x,
+#         )
 
-        # print(f"Spikes Input: {spk_img.sum().item()}, Output: {spk_rec.sum().item()}")
-        # print(f"trace_pre: {trace_pre.sum().item()}, trace_post: {trace_post.sum().item()}")
-        # print(f"Delta_w Min: {delta_w.min().item()}, Max: {delta_w.max().item()}")
+#         # print(f"Spikes Input: {spk_img.sum().item()}, Output: {spk_rec.sum().item()}")
+#         # print(f"trace_pre: {trace_pre.sum().item()}, trace_post: {trace_post.sum().item()}")
+#         # print(f"Delta_w Min: {delta_w.min().item()}, Max: {delta_w.max().item()}")
         
-        with torch.no_grad():
-            net.fc1.weight += delta_w
+#         with torch.no_grad():
+#             net.fc1.weight += delta_w
 
-        # print(f"Shape of spk_rec: {spk_rec.shape}")
-        # print(f"Shape of mem_rec: {mem_rec.shape}")
+#         # print(f"Shape of spk_rec: {spk_rec.shape}")
+#         # print(f"Shape of mem_rec: {mem_rec.shape}")
 
-        iter_counter += 1
-        print(f"Image: {iter_counter}")
+#         iter_counter += 1
+#         print(f"Image: {iter_counter}")
 
-    weights = net.fc1.weight.data.cpu().numpy()
+#     weights = net.fc1.weight.data.cpu().numpy()
 
-    plt.figure(figsize=(12, 5))
-    plt.imshow(weights, cmap="viridis", aspect="auto")
-    plt.colorbar(label="Weight Value")
-    plt.xlabel("Input Neurons (Flattened Pixels)")
-    plt.ylabel("Output Neurons")
-    plt.title("STDP Weight Matrix Visualization")
-    plt.show()
+#     plt.figure(figsize=(12, 5))
+#     plt.imshow(weights, cmap="viridis", aspect="auto")
+#     plt.colorbar(label="Weight Value")
+#     plt.xlabel("Input Neurons (Flattened Pixels)")
+#     plt.ylabel("Output Neurons")
+#     plt.title("STDP Weight Matrix Visualization")
+#     plt.show()
 
-    dif_weights = org_weights - weights
+#     num_neurons = num_output
+#     rows = int(np.ceil(num_neurons / 10)) 
+#     cols = min(10, num_neurons)  
 
-    plt.figure(figsize=(12, 5))
-    plt.imshow(dif_weights, cmap="viridis", aspect="auto")
-    plt.colorbar(label="Weight Value")
-    plt.xlabel("Input Neurons (Flattened Pixels)")
-    plt.ylabel("Output Neurons")
-    plt.title("STDP Weight Matrix Visualization")
-    plt.show()
+#     fig, axes = plt.subplots(rows, cols, figsize=(10, rows * 2))
 
-    num_neurons = num_output
-    rows = int(np.ceil(num_neurons / 10))  # Adjust rows based on num_output
-    cols = min(10, num_neurons)  # Limit to 10 columns for better visualization
+#     weights = net.fc1.weight.data.cpu().numpy()
 
-    fig, axes = plt.subplots(rows, cols, figsize=(10, rows * 2))
+#     for i, ax in enumerate(axes.flat):
+#         if i < num_neurons:
+#             img = weights[i].reshape(28, 28)  
+#             ax.imshow(img, cmap="viridis")
+#             ax.set_title(f"Neuron {i}")
+#             ax.axis("off")
+#         else:
+#             ax.axis("off")  
 
-    weights = net.fc1.weight.data.cpu().numpy()
-
-    for i, ax in enumerate(axes.flat):
-        if i < num_neurons:
-            img = weights[i].reshape(28, 28)  # Reshape each row into 28x28
-            ax.imshow(img, cmap="viridis")
-            ax.set_title(f"Neuron {i}")
-            ax.axis("off")
-        else:
-            ax.axis("off")  # Hide extra subplots
-
-    plt.suptitle("Receptive Fields of Output Neurons")
-    plt.show()
-
-        
-        
+#     plt.suptitle("Receptive Fields of Output Neurons")
+#     plt.show()
 
 
+# torch.save(net.state_dict(), 'model_weights.pth')
+   
+test_net = Net(num_input, num_output, beta, threshold, reset_mechanism)
+test_net.load_state_dict(torch.load('model_weights.pth', weights_only=True))
+print(test_net.eval())
 
