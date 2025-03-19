@@ -18,11 +18,13 @@ class Net(nn.Module):
 
     def forward(self, x):
 
+        # print(f"Shape of x: {x.shape}")
         mem = self.lif.init_leaky()
         spk_rec = []
         mem_rec = []
 
         for step in range(x.shape[0]):  
+            # print(f"Shape of x: {x[step].shape}")
             cur = self.fc1(x[step]) 
             spk, mem = self.lif(cur, mem) 
             spk_rec.append(spk)
