@@ -53,11 +53,18 @@ for step in range(100):
         # Now we check if this neuron spikes at the same time as any other neuron
         for other_neuron_idx in range(neuron_idx + 1, 10):  # Compare with neurons after it to avoid redundant checks
             other_neuron_spk = spk_rec[:, 0, other_neuron_idx]
-            
+
             # Check if there are time steps where both neurons spike
-            common_spikes = torch.logical_and(neuron_spk, other_neuron_spk)
-            
-            if torch.any(common_spikes):
+            # common_spikes = torch.logical_and(neuron_spk, other_neuron_spk)
+
+            main_max = torch.max(neuron_spk)
+            sec_max = torch.max(other_neuron_spk)
+             
+            if main_max == sec_max:
                 print(f"ERROR: Neurons {neuron_idx} and {other_neuron_idx} fired at the same time!")
-                print(f"Time steps: {torch.nonzero(common_spikes).squeeze()}")
                 break
+
+            # if torch.any(common_spikes):
+            #     print(f"ERROR: Neurons {neuron_idx} and {other_neuron_idx} fired at the same time!")
+            #     print(f"Time steps: {torch.nonzero(common_spikes).squeeze()}")
+            #     break
