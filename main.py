@@ -22,7 +22,7 @@ ang = np.ceil(dim / ppa)
 ctr = (1/3) * dim[0]
 sur = (2/3) * dim[0]
 
-n_train = 500
+n_train = 10
 n_test = 200
 r_seed = 2021
 

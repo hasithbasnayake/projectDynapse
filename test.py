@@ -33,7 +33,9 @@ print(f"Flattened image shape (should be C:1 x P:784): {img.shape}")
 img = spikegen.latency(data=img, num_steps=255, normalize=True, linear=True)
 print(f"Spike image shape (should be T:255 x C:1 x P:784): {img.shape}")
 
-for step in range(100):
+
+
+for step in range(1):
 
     # Get spike and membrane recordings
     spk_rec, mem_rec = model(img)
@@ -42,29 +44,31 @@ for step in range(100):
     print(f"mem_rec shape: {mem_rec.shape}")
 
     # Iterate over neurons (assuming 10 neurons in output layer)
-    for neuron_idx in range(10):  # For each of the 10 neurons
+    # for neuron_idx in range(10):  # For each of the 10 neurons
 
-        # Get the spike train for the current neuron across all time steps
-        neuron_spk = spk_rec[:, 0, neuron_idx]
-        print(f"Spike train of neuron {neuron_idx} across all time steps: {neuron_spk.shape}")
-        print(f"Max: {torch.max(neuron_spk)}")
-        print(f"Min: {torch.min(neuron_spk)}")
+    #     # Get the spike train for the current neuron across all time steps
+    #     neuron_spk = spk_rec[:, 0, neuron_idx]
+    #     print(f"Spike train of neuron {neuron_idx} across all time steps: {neuron_spk.shape}")
+    #     print(f"Max: {torch.max(neuron_spk)}")
+    #     print(f"Min: {torch.min(neuron_spk)}")
 
-        # Now we check if this neuron spikes at the same time as any other neuron
-        for other_neuron_idx in range(neuron_idx + 1, 10):  # Compare with neurons after it to avoid redundant checks
-            other_neuron_spk = spk_rec[:, 0, other_neuron_idx]
+    #     # Now we check if this neuron spikes at the same time as any other neuron
+    #     for other_neuron_idx in range(neuron_idx + 1, 10):  # Compare with neurons after it to avoid redundant checks
+    #         other_neuron_spk = spk_rec[:, 0, other_neuron_idx]
 
-            # Check if there are time steps where both neurons spike
-            # common_spikes = torch.logical_and(neuron_spk, other_neuron_spk)
+    #         # Check if there are time steps where both neurons spike
+    #         # common_spikes = torch.logical_and(neuron_spk, other_neuron_spk)
 
-            main_max = torch.max(neuron_spk)
-            sec_max = torch.max(other_neuron_spk)
+    #         main_max = torch.max(neuron_spk)
+    #         sec_max = torch.max(other_neuron_spk)
              
-            if main_max == sec_max:
-                print(f"ERROR: Neurons {neuron_idx} and {other_neuron_idx} fired at the same time!")
-                break
+    #         if main_max == sec_max:
+    #             print(f"ERROR: Neurons {neuron_idx} and {other_neuron_idx} fired at the same time!")
+    #             break
 
-            # if torch.any(common_spikes):
-            #     print(f"ERROR: Neurons {neuron_idx} and {other_neuron_idx} fired at the same time!")
-            #     print(f"Time steps: {torch.nonzero(common_spikes).squeeze()}")
-            #     break
+    #         # if torch.any(common_spikes):
+    #         #     print(f"ERROR: Neurons {neuron_idx} and {other_neuron_idx} fired at the same time!")
+    #         #     print(f"Time steps: {torch.nonzero(common_spikes).squeeze()}")
+    #         #     break
+        
+    

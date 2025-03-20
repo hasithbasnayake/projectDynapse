@@ -26,17 +26,27 @@ class Net(nn.Module):
         for step in range(x.shape[0]):  
             # print(f"Shape of x: {x[step].shape}")
             cur = self.fc1(x[step]) 
-            spk, mem = self.lif(cur, mem) 
+            spk, mem = self.lif(cur, mem)
+            # print(spk)
+            # print(mem)
             spk_rec.append(spk)
             mem_rec.append(mem)
 
-            if torch.any(spk): # WTA Inhibition
-                steps_left = x.shape[0] - step - 1
-                # print(f"x.shape[0] ({x.shape[0]}) - step {step} = steps_left {steps_left}")
+            d = []
 
-                spk_rec.extend([torch.zeros_like(spk) for _ in range(steps_left)])
-                mem_rec.extend([torch.zeros_like(mem) for _ in range(steps_left)])
-                break  
+            for l in range(mem.shape[0]):
+                d.append((mem, spk))
+
+            print(d)
+
+
+            # if torch.any(spk): # WTA Inhibition
+            #     steps_left = x.shape[0] - step - 1
+            #     # print(f"x.shape[0] ({x.shape[0]}) - step {step} = steps_left {steps_left}")
+
+            #     spk_rec.extend([torch.zeros_like(spk) for _ in range(steps_left)])
+            #     mem_rec.extend([torch.zeros_like(mem) for _ in range(steps_left)])
+            #     break  
 
 
         return torch.stack(spk_rec), torch.stack(mem_rec)
