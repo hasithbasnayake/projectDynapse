@@ -27,37 +27,44 @@ class Net(nn.Module):
             # print(f"Shape of x: {x[step].shape}")
             cur = self.fc1(x[step]) 
             spk, mem = self.lif(cur, mem)
+
+            spk_rec.append(spk)
+            mem_rec.append(mem)
+            
             # print(spk)
             # print(mem)
 
-            d = [(f"{mem[0, l].item():.1f}", spk[0, l].item()) for l in range(mem.shape[1])]
+            # d = [(f"{mem[0, l].item():.1f}", spk[0, l].item()) for l in range(mem.shape[1])]
             # print(f"{d}{step}")
 
 
             # if torch.any(spk):
             #     print(f"SPIKE DETECTED AT {step}")
                 
-            if torch.any(spk):
-                neurons_that_spiked = [i for i, val in enumerate(spk[0].tolist()) if val == 1]
-                # print(neurons_that_spiked)
-                random_neuron = neurons_that_spiked[torch.randint(0, len(neurons_that_spiked), (1,)).item()]
-                # print(random_neuron)
+            # if torch.any(spk):
+            #     neurons_that_spiked = [i for i, val in enumerate(spk[0].tolist()) if val == 1]
+            #     # print(neurons_that_spiked)
+            #     random_neuron = neurons_that_spiked[torch.randint(0, len(neurons_that_spiked), (1,)).item()]
+            #     # print(random_neuron)
 
-                spk = torch.zeros_like(spk)
-                mem = torch.zeros_like(mem)
+            #     spk = torch.zeros_like(spk)
+            #     mem = torch.zeros_like(mem)
 
-                spk[0, random_neuron] = 1
+            #     spk[0, random_neuron] = 1
 
-                # print(spk[0].tolist())
-                # print(mem[0].tolist())
+            #     spk_rec.append(spk)
+            #     mem_rec.append(mem)
 
-                spk_rec.append(spk)
-                mem_rec.append(mem)
+            #     # print(f"Shape of spk_rec: {len(spk_rec)}")
 
-                while len(spk_rec) < 255:
-                    spk_rec.append(torch.zeros((1, 10)))
-                    mem_rec.append(torch.zeros((1, 10)))
+            #     while len(spk_rec) < 255:
+            #         spk_rec.append(torch.zeros((1, spk.shape[1]
+            #                                     )))
+            #         mem_rec.append(torch.zeros((1, spk.shape[1])))
 
-                break
+            #     break
                 
+            # spk_rec.append(spk)
+            # mem_rec.append(mem)
+
         return torch.stack(spk_rec), torch.stack(mem_rec)

@@ -15,7 +15,7 @@ from model import *
 # Get an image from the convolved dataset, and then print it out as a sanity check
 # Pass it into the model and then print out the spike and memory (need to check formatting)
 
-model = Net(num_input=28*28, num_output=10, beta=0.9, threshold=1, reset_mechanism="zero")
+model = Net(num_input=28*28, num_output=2, beta=0.9, threshold=20, reset_mechanism="zero")
 
 data = torch.load("test_sample.pt", weights_only="True")
 img, label = data
@@ -27,48 +27,83 @@ img, label = data
 
 # Create the debugging run 
 
+save_img = img 
 print(f"Image shape (should be C:1 x H:28 x W:28): {img.shape}")
 img = torch.flatten(img, start_dim=1)
 print(f"Flattened image shape (should be C:1 x P:784): {img.shape}")
 img = spikegen.latency(data=img, num_steps=255, normalize=True, linear=True)
 print(f"Spike image shape (should be T:255 x C:1 x P:784): {img.shape}")
 
+trace_pre = None
+trace_post = None
 
+iter_counter = 0
 
-for step in range(1):
+for step in range(200):
 
     # Get spike and membrane recordings
     spk_rec, mem_rec = model(img)
 
+    print(spk_rec.max().item())
+    print(mem_rec.max().item())
+    # print(spk_rec[254])
+
     print(f"spk_rec shape: {spk_rec.shape}")
     print(f"mem_rec shape: {mem_rec.shape}")
 
-    # Iterate over neurons (assuming 10 neurons in output layer)
-    # for neuron_idx in range(10):  # For each of the 10 neurons
+    trace_pre, trace_post, delta_w = stdp_linear_single_step(
+        fc = model.fc1,
+        in_spike = img.squeeze(1),
+        out_spike = spk_rec.squeeze(1),
+        trace_pre=trace_pre,
+        trace_post=trace_post,
+        tau_pre = 5,
+        tau_post = 5,
+        f_pre = lambda x: 5e-3 * x**0.65,
+        f_post = lambda x: 3.75e-3 * x**0.05, 
+    )
 
-    #     # Get the spike train for the current neuron across all time steps
-    #     neuron_spk = spk_rec[:, 0, neuron_idx]
-    #     print(f"Spike train of neuron {neuron_idx} across all time steps: {neuron_spk.shape}")
-    #     print(f"Max: {torch.max(neuron_spk)}")
-    #     print(f"Min: {torch.min(neuron_spk)}")
-
-    #     # Now we check if this neuron spikes at the same time as any other neuron
-    #     for other_neuron_idx in range(neuron_idx + 1, 10):  # Compare with neurons after it to avoid redundant checks
-    #         other_neuron_spk = spk_rec[:, 0, other_neuron_idx]
-
-    #         # Check if there are time steps where both neurons spike
-    #         # common_spikes = torch.logical_and(neuron_spk, other_neuron_spk)
-
-    #         main_max = torch.max(neuron_spk)
-    #         sec_max = torch.max(other_neuron_spk)
-             
-    #         if main_max == sec_max:
-    #             print(f"ERROR: Neurons {neuron_idx} and {other_neuron_idx} fired at the same time!")
-    #             break
-
-    #         # if torch.any(common_spikes):
-    #         #     print(f"ERROR: Neurons {neuron_idx} and {other_neuron_idx} fired at the same time!")
-    #         #     print(f"Time steps: {torch.nonzero(common_spikes).squeeze()}")
-    #         #     break
+    with torch.no_grad():
+        model.fc1.weight += delta_w
         
-    
+    print(f"Membrane potential min: {mem_rec.min().item()}, max: {mem_rec.max().item()}")
+    print(f"Min Δw: {delta_w.min().item()}, Max Δw: {delta_w.max().item()}")
+
+    # weights = model.fc1.weight.data.cpu().numpy()
+    # plt.imshow(weights[0].reshape(28, 28), cmap="viridis")
+    # plt.title("Updated Weights for Neuron 0")
+    # plt.axis("off")
+    # plt.show()
+
+
+    iter_counter += 1
+    print(f"Image: {iter_counter}")
+
+weights = model.fc1.weight.data.cpu().numpy()
+
+num_output_neurons = weights.shape[0]
+
+rows = int(np.ceil(num_output_neurons / 10))  
+cols = min(10, num_output_neurons)  
+
+fig, axes = plt.subplots(rows, cols, figsize=(10, rows * 2))
+
+for i, ax in enumerate(axes.flat):
+    if i < num_output_neurons:
+        img = weights[i].reshape(28, 28)
+        ax.imshow(img, cmap="gray") 
+        ax.set_title(f"Neuron {i}")
+        ax.axis("off") 
+    else:
+        ax.axis("off") 
+
+# Title for the entire plot
+plt.suptitle("Receptive Fields of Output Neurons")
+plt.tight_layout()
+plt.show()
+
+save_img = save_img.squeeze(0) 
+plt.imshow(save_img, cmap="gray") 
+plt.title(f"Label: {label}")  
+plt.axis("off")  
+plt.show()

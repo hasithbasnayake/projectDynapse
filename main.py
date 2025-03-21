@@ -43,11 +43,11 @@ num_output = 10
 # Spiking Dynamics 
 
 beta = .9
-threshold = 20
+threshold = 1
 reset_mechanism = "zero"
 
-tau_pre = 5
-tau_post = 5
+tau_pre = 20
+tau_post = 20
 
 f_pre = 5e-3
 f_post = 3.75e-3
@@ -93,6 +93,9 @@ for epoch in range(num_epochs):
         
         with torch.no_grad():
             net.fc1.weight += delta_w
+
+        print(f"Min Δw: {delta_w.min().item()}, Max Δw: {delta_w.max().item()}")
+
 
         # print(f"Shape of spk_rec: {spk_rec.shape}")
         # print(f"Shape of mem_rec: {mem_rec.shape}")
