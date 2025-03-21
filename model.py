@@ -29,24 +29,35 @@ class Net(nn.Module):
             spk, mem = self.lif(cur, mem)
             # print(spk)
             # print(mem)
-            spk_rec.append(spk)
-            mem_rec.append(mem)
 
-            d = []
-
-            for l in range(mem.shape[0]):
-                d.append((mem, spk))
-
-            print(d)
+            d = [(f"{mem[0, l].item():.1f}", spk[0, l].item()) for l in range(mem.shape[1])]
+            # print(f"{d}{step}")
 
 
-            # if torch.any(spk): # WTA Inhibition
-            #     steps_left = x.shape[0] - step - 1
-            #     # print(f"x.shape[0] ({x.shape[0]}) - step {step} = steps_left {steps_left}")
+            # if torch.any(spk):
+            #     print(f"SPIKE DETECTED AT {step}")
+                
+            if torch.any(spk):
+                neurons_that_spiked = [i for i, val in enumerate(spk[0].tolist()) if val == 1]
+                # print(neurons_that_spiked)
+                random_neuron = neurons_that_spiked[torch.randint(0, len(neurons_that_spiked), (1,)).item()]
+                # print(random_neuron)
 
-            #     spk_rec.extend([torch.zeros_like(spk) for _ in range(steps_left)])
-            #     mem_rec.extend([torch.zeros_like(mem) for _ in range(steps_left)])
-            #     break  
+                spk = torch.zeros_like(spk)
+                mem = torch.zeros_like(mem)
 
+                spk[0, random_neuron] = 1
 
+                # print(spk[0].tolist())
+                # print(mem[0].tolist())
+
+                spk_rec.append(spk)
+                mem_rec.append(mem)
+
+                while len(spk_rec) < 255:
+                    spk_rec.append(torch.zeros((1, 10)))
+                    mem_rec.append(torch.zeros((1, 10)))
+
+                break
+                
         return torch.stack(spk_rec), torch.stack(mem_rec)

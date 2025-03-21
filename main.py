@@ -22,7 +22,7 @@ ang = np.ceil(dim / ppa)
 ctr = (1/3) * dim[0]
 sur = (2/3) * dim[0]
 
-n_train = 10
+n_train = 1000
 n_test = 200
 r_seed = 2021
 
@@ -133,10 +133,9 @@ for epoch in range(num_epochs):
     plt.suptitle("Receptive Fields of Output Neurons")
     receptive_field_path = os.path.join(dir, f"receptive_fields_epoch_{epoch}.png")
     plt.savefig(receptive_field_path)
-    plt.close()
     plt.show()
 
-torch.save(net.state_dict(), f"{dir}/_n_train:{n_train}_num_output:{num_output}.pth")
+# torch.save(net.state_dict(), f"{dir}/_n_train:{n_train}_num_output:{num_output}.pth")
 
 
 
