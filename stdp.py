@@ -1,4 +1,5 @@
 import torch
+import math
 import torch.nn as nn
 import snntorch as snn
 
@@ -27,13 +28,8 @@ def stdp(fc, in_spike, out_spike):
 
     # Compute weight update 
 
-    # Create a list of all delta T's, the input spike train is in the form 255 x 784
-
-    # We need to find the spike time that every pixel fires at, wherever the column is 1
-    # Save that time in a list 
-    # Then compute for every post-synaptic fire, get that timestep (row) and compute a delta t 
-
-    input_spike_times = []
+    input_spike_times = torch.zeros(input_spike.shape[1])
+    
 
     # So remember that the weight update is by synaptic connection, so order matters
     # This is because your delta_w is a 1x784 matrix, for that single neuron that you are updating 
@@ -42,35 +38,77 @@ def stdp(fc, in_spike, out_spike):
     # You then take the timestep of when your post-synaptic neuron spiked, then compute the weight update and append it to the list of delta_W
 
     for col in range(input_spike.shape[1]): # Iterate over every column
-        row = torch.argmax(input_spike[:, col]).item() # Get the timestep in which they fire
+        step = torch.argmax(input_spike[:, col]).item() # Get the timestep in which they fire
+        input_spike_times[col] = step # Append to a list that's tracking their spike times, should be the # of Input Synapses Long
+    
+    delta_w = torch.zeros_like(input_spike_times)
+    delta_w_org = fc[neuron, :].clone()
+
+    A_plus = 5e-3
+    A_minus = 3.75e-3
+    tau = 20
+    mu_plus = 0.65
+    mu_minus = 0.05
+
+    for idx, post_spike in enumerate(out_spike):
+        print(f"idx: {idx}")
+        if post_spike == 1:
+            for pre_spike_time in input_spike_times:
+                delta_t = idx - pre_spike_time
+                w = delta_w_org[idx]
+
+                if delta_t > 0:
+                    delta_w[idx] += A_plus * (1 - w)**mu_plus * math.exp(-abs(delta_t) / tau)
+
+                if delta_t < 0:
+                    delta_w[idx] += -A_minus * w**mu_minus * math.exp(-abs(delta_t) / tau)
+
+
+        print(f"post_spike: {post_spike}")
+
+        
+
+    print(f"DEBUG: Length of input_spike_times: {len(input_spike_times)}")
+    print(f"DEBUG: Num col in input_spike (should match above val): {input_spike.shape[1]}")
     
 
-    return neuron, post_spike_time, out_spike
+    return neuron, post_spike_time, out_spike, input_spike_times, delta_w
 
 
 # Need to check the zero-based indexing of your snntorch functions 
 # Since you're going off zero-based indexing for stdp weight update
 # Testing
 
+weight_matrix = torch.tensor([
+    [0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [1, 0, 1, 0, 0],
+    [.2, .1, .3, .5, 0.8],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+])
+
 input_spike = torch.tensor([
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [1, 1, 1, 1],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
+    [0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [1, 0, 1, 0, 0],
+    [0, 0, 0, 1, 0],
+    [0, 0, 0, 0, 0],
 ])
 
 out_spike = torch.tensor([
     [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 1, 0, 0, 0],
-    [1, 0, 1, 1, 1, 0, 1],
+    [0, 0, 0, 1, 0, 0, 0],
+    [1, 0, 1, 0, 1, 0, 1],
     [0, 0, 0, 1, 0, 0, 0]
 ])
 
 
-neuron, post_spike_time, out_spike = stdp(None, input_spike, out_spike)
+neuron, post_spike_time, out_spike, input_spike_times, delta_w = stdp(weight_matrix, input_spike, out_spike)
 print(f"neuron: {neuron}")
 print(f"post_spike_time: {post_spike_time}")
 print(f"out_spike: {out_spike}")
-
+print(f"input_spike_times: {input_spike_times}")
+print(f"delta_w: {delta_w}")
