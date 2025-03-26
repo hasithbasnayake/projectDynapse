@@ -12,7 +12,7 @@ from snntorch import spikegen
 import snntorch.spikeplot as splt
 import numpy as np
 import matplotlib.pyplot as plt
-from func import *
+from old.oldfunc import *
 
 
 dim = np.array([6, 6])  # kernel dimensions (in pixels)

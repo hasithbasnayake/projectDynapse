@@ -11,7 +11,7 @@ from snntorch.functional.stdp_learner import stdp_linear_single_step
 import snntorch.spikeplot as splt
 import numpy as np
 import matplotlib.pyplot as plt
-from func import *
+from old.oldfunc import *
 
 def stdp(fc, in_spike, out_spike, params):
     '''
@@ -57,7 +57,8 @@ def stdp(fc, in_spike, out_spike, params):
 
         for t_post in spike_times_of_output_neuron:
             delta_t = t_post - t_pre
-            w = neuron_weights[synapse]
+            w = neuron_weights[synapse].half().item()
+            # Simply changing this from a tensor to a float16 has significantly increase computation
 
             if delta_t > 0:
                 delta_w[synapse] += A_plus * (1 - w)**mu_plus * math.exp(-abs(delta_t) / tau)
@@ -123,7 +124,7 @@ print(f"Spike image shape (should be T:255 x C:1 x P:784): {img_2.shape}")
 
 data_list = []  
 
-for iter in range(100):  
+for iter in range(500):  
     if iter % 2 == 0:  
         data_list.append(img)  
     else:  

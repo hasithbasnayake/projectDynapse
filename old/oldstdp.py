@@ -50,16 +50,16 @@ def stdp(fc, in_spike, out_spike, params):
             w = neuron_weights[synapse]
 
             if delta_t > 0:
-                # delta_w[synapse] += A_plus * (1 - w)**mu_plus * math.exp(-abs(delta_t) / tau)
-                delta_w[synapse] += 1
+                delta_w[synapse] += A_plus * (1 - w)**mu_plus * math.exp(-abs(delta_t) / tau)
+                # delta_w[synapse] += 1
 
             if delta_t < 0: 
-                # delta_w[synapse] += -A_minus * w**mu_minus * math.exp(-abs(delta_t) / tau)
-                delta_w[synapse] += -1
+                delta_w[synapse] += -A_minus * w**mu_minus * math.exp(-abs(delta_t) / tau)
+                # delta_w[synapse] += -1
 
     print(f"delta_w: {delta_w}")
 
-    return post_synaptic_neuron_idx, post_synaptic_neuron_spike_train
+    return post_synaptic_neuron_idx, post_synaptic_neuron_spike_train, delta_w
 
 
 
@@ -168,9 +168,9 @@ mu_minus = 0.05
 
 params = [A_plus, A_minus, tau, mu_plus, mu_minus]
 
-for x in range(1):
-    r_post_synaptic_neuron_idx, r_post_synaptic_neuron_spike_train = stdp(weight_matrix, in_spike, out_spike, params)
-    print(f"post_synaptic_neuron_idx: {r_post_synaptic_neuron_idx}")
-    print(f"out_spike: {r_post_synaptic_neuron_spike_train}")
+# for x in range(100):
+#     r_post_synaptic_neuron_idx, r_post_synaptic_neuron_spike_train = stdp(weight_matrix, in_spike, out_spike, params)
+#     print(f"post_synaptic_neuron_idx: {r_post_synaptic_neuron_idx}")
+#     print(f"out_spike: {r_post_synaptic_neuron_spike_train}")
 
 

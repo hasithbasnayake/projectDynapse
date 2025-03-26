@@ -8,7 +8,7 @@ from snntorch.functional.stdp_learner import stdp_linear_single_step
 import snntorch.spikeplot as splt
 import numpy as np
 import matplotlib.pyplot as plt
-from func import *
+from old.oldfunc import *
 
 num_input = 28 * 28
 num_output = 40
