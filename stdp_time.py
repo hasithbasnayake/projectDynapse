@@ -1,6 +1,5 @@
 import torch
 import math 
-from old.oldstdp import *
 
 def stdp_time(weight_matrix: torch.Tensor, 
               in_spike: torch.Tensor, 
@@ -81,38 +80,3 @@ def stdp_time(weight_matrix: torch.Tensor,
 
     return out_neuron, delta_w
     
-
-# weight_matrix = torch.tensor([
-#     [.2, .5, .1, .3],
-#     [.3, .2, .6, .9]
-# ])
-
-# in_spike = torch.tensor([
-#     [0, 1, 0, 1],
-#     [0, 0, 0, 0],
-#     [1, 0, 0, 0],
-#     [0, 0, 1, 0],
-#     [0, 0, 0, 0],
-# ])
-
-# out_spike = torch.tensor([
-#     [1, 0],
-#     [0, 0],
-#     [0, 0],
-#     [0, 0],
-#     [0, 0]
-# ])
-
-# A_plus = 5e-3
-# A_minus = 3.75e-3
-# tau = 20
-# mu_plus = 0.65
-# mu_minus = 0.05
-
-# params = [A_plus, A_minus, tau, mu_plus, mu_minus]
-
-# out_neuron, A_delta_w = stdp_time(weight_matrix, in_spike, out_spike, params)
-# trash, trash2, B_delta_w = stdp(weight_matrix, in_spike, out_spike, params)
-
-# print(f"A_delta_w: {A_delta_w}")
-# print(f"B_delta_w: {B_delta_w}")
