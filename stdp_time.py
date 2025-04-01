@@ -35,32 +35,32 @@ def stdp_time(weight_matrix: torch.Tensor,
 
             break
     
-    print(f"Firing neuron: {out_neuron}")
+    # print(f"Firing neuron: {out_neuron}")
 
     if out_neuron == None:
         print(f"No weight update, no output spikes")
-        return None 
+        return 0, torch.zeros_like(weight_matrix[0, :])
     
     # Save spike train and weight matrix of chosen output neuron
     
     out_spike = out_spike[:, out_neuron]
     weight_matrix = weight_matrix[out_neuron, :]
 
-    print(f"out_spike: {out_spike}")
-    print(f"weight_matrix: {weight_matrix}")
+    # print(f"out_spike: {out_spike}")
+    # print(f"weight_matrix: {weight_matrix}")
     
     # Retrieve spike timesteps of input neurons 
 
     has_spikes = in_spike.any(dim=0)
     in_spike_times = torch.where(has_spikes, torch.argmax(in_spike, dim=0), -1)
 
-    print(f"in_spike_times: {in_spike_times}")
+    # print(f"in_spike_times: {in_spike_times}")
 
     # Retrieve spike timesteps of chosen output neuron
 
     out_spike_times = torch.where(out_spike == 1)[0]
 
-    print(f"out_spike_times: {out_spike_times}")
+    # print(f"out_spike_times: {out_spike_times}")
 
     # Weight Update
 
@@ -79,40 +79,40 @@ def stdp_time(weight_matrix: torch.Tensor,
     
     delta_w = ltp_updates + ltd_updates
 
-    return delta_w
+    return out_neuron, delta_w
     
 
-weight_matrix = torch.tensor([
-    [.2, .5, .1, .3],
-    [.3, .2, .6, .9]
-])
+# weight_matrix = torch.tensor([
+#     [.2, .5, .1, .3],
+#     [.3, .2, .6, .9]
+# ])
 
-in_spike = torch.tensor([
-    [0, 1, 0, 1],
-    [0, 0, 0, 0],
-    [1, 0, 0, 0],
-    [0, 0, 1, 0],
-    [0, 0, 0, 0],
-])
+# in_spike = torch.tensor([
+#     [0, 1, 0, 1],
+#     [0, 0, 0, 0],
+#     [1, 0, 0, 0],
+#     [0, 0, 1, 0],
+#     [0, 0, 0, 0],
+# ])
 
-out_spike = torch.tensor([
-    [1, 0],
-    [0, 0],
-    [0, 0],
-    [0, 0],
-    [0, 0]
-])
+# out_spike = torch.tensor([
+#     [1, 0],
+#     [0, 0],
+#     [0, 0],
+#     [0, 0],
+#     [0, 0]
+# ])
 
-A_plus = 5e-3
-A_minus = 3.75e-3
-tau = 20
-mu_plus = 0.65
-mu_minus = 0.05
+# A_plus = 5e-3
+# A_minus = 3.75e-3
+# tau = 20
+# mu_plus = 0.65
+# mu_minus = 0.05
 
-params = [A_plus, A_minus, tau, mu_plus, mu_minus]
+# params = [A_plus, A_minus, tau, mu_plus, mu_minus]
 
-A_delta_w = stdp_time(weight_matrix, in_spike, out_spike, params)
-trash, trash2, B_delta_w = stdp(weight_matrix, in_spike, out_spike, params)
+# out_neuron, A_delta_w = stdp_time(weight_matrix, in_spike, out_spike, params)
+# trash, trash2, B_delta_w = stdp(weight_matrix, in_spike, out_spike, params)
 
-print(f"A_delta_w: {A_delta_w}")
-print(f"B_delta_w: {B_delta_w}")
+# print(f"A_delta_w: {A_delta_w}")
+# print(f"B_delta_w: {B_delta_w}")
