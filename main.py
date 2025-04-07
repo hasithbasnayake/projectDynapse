@@ -5,7 +5,7 @@ from model import *
 from stdp_time import stdp_time
 import matplotlib.pyplot as plt
 
-model = Net(num_input=28*28, num_output=2, beta=0.9, threshold=20, reset_mechanism="zero")
+model = Net(num_input=28*28, num_output=10, beta=0.9, threshold=20, reset_mechanism="zero")
 
 img, label = torch.load("test_sample.pt", weights_only="True")
 img_2, label_2 = torch.load("test_sample_two.pt", weights_only="True")
@@ -26,15 +26,25 @@ params = [A_plus, A_minus, tau, mu_plus, mu_minus]
 
 data = []  
 
-for iter in range(300):  
+for iter in range(200):  
     if iter % 2 == 0:  
         data.append(img)  
     else:  
         data.append(img_2)  
 
-for img_num, val in enumerate(data):
+# for img_num, val in enumerate(data):
     
+data_list = torch.load("data\processed\convOFF_train.pt", weights_only=True)
+
+for img_num, data in enumerate(data_list):
+    val, label = data
+
+    val = torch.flatten(val, start_dim=1)
+    val = spikegen.latency(data=val, num_steps=255, normalize=True, linear=True)
+
     spk_rec, mem_rec = model(val)
+
+
 
     out_neuron, delta_w = stdp_time(weight_matrix=model.fc1.weight, in_spike=val.squeeze(1), out_spike=spk_rec.squeeze(1), params=params)
 
@@ -45,6 +55,9 @@ for img_num, val in enumerate(data):
     print(f"Min Δw: {model.fc1.weight.min().item()}, Max Δw: {model.fc1.weight.max().item()}")
 
     print(f"Image: {img_num}")
+
+    if img_num == 200:
+        break 
 
 weights = model.fc1.weight.data.cpu().numpy()
 

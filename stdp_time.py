@@ -1,6 +1,8 @@
 import torch
 import math 
 
+
+
 def stdp_time(weight_matrix: torch.Tensor, 
               in_spike: torch.Tensor, 
               out_spike: torch.Tensor, 
@@ -43,6 +45,10 @@ def stdp_time(weight_matrix: torch.Tensor,
     # Save spike train and weight matrix of chosen output neuron
     
     out_spike = out_spike[:, out_neuron]
+    spike_indices = torch.nonzero(out_spike, as_tuple=True)[0]
+    if spike_indices.numel() > 0:
+        first_spike_idx = spike_indices[0]
+        out_spike[first_spike_idx+1:] = 0
     weight_matrix = weight_matrix[out_neuron, :]
 
     # print(f"out_spike: {out_spike}")
