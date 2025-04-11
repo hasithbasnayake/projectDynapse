@@ -48,7 +48,7 @@ for step in range(iterations):
 
     spike_image = None 
 
-    # Write the spikegen function 
+    # Write the spikegen function, pass into the model, and then start testing STDP
 
 
 def spikegen(image, num_steps):
