@@ -13,16 +13,16 @@ data_OFF = torch.load("data/processed/convOFF_train.pt", weights_only=True)
 test_images_ON = data_ON[:1000]
 test_images_OFF = data_OFF[:1000]
 
+
+
 data_ORG = torch.load("data/split/split_train.pt", weights_only=True)
 
 testD_img, test_label = data_ORG[3]
 
-print("UHHH")
 
 plt.imshow(testD_img.squeeze(0).detach().numpy(), cmap="grey")
 plt.show()
 
-print("HMMM")
 
 # test_img2, test_label2 = test_images_ON[2]
 
@@ -32,7 +32,7 @@ print("HMMM")
 X = []
 Y = []
 
-for iter in range(1000):
+for iter in range(200):
     print(iter)
     img_ON, label_ON = test_images_ON[iter]
     img_OFF, label_OFF = test_images_OFF[iter]

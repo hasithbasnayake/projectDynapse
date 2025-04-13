@@ -11,7 +11,6 @@ from stdp_time import *
 data_ON = torch.load("data/processed/convON_train.pt", weights_only=True) 
 data_OFF = torch.load("data/processed/convOFF_train.pt", weights_only=True) 
 
-
 img_ON, label_ON = data_ON[0]
 img_OFF, label_OFF = data_OFF[0]
 
