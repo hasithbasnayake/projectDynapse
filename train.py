@@ -32,7 +32,6 @@ mu_minus = 0.05
 
 params = [A_plus, A_minus, tau, mu_plus, mu_minus]
 
-
 transform = transforms.Compose( # Data
     [transforms.ToTensor()]
 )
