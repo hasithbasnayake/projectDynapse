@@ -21,7 +21,7 @@ beta = 0.9
 threshold = 20
 reset_mechanism = "zero"
 
-iterations = 20000 # Training
+iterations = 10000 # Training
 num_steps = 255
 
 A_plus = 5e-3 # STDP
