@@ -21,7 +21,7 @@ beta = 0.9
 threshold = 20
 reset_mechanism = "zero"
 
-iterations = 10000 # Training
+iterations = 20000 # Training
 num_steps = 255
 
 A_plus = 5e-3 # STDP
@@ -49,6 +49,8 @@ dataiter = iter(training_loader) # sample_images(5, training_loader, False)
 
 model = Net(num_input=num_input, num_output=num_output, beta=beta, threshold=threshold, reset_mechanism=reset_mechanism)
 
+avg_max_min = [0, 0]
+
 # Training Loop 
 
 for step in range(iterations):
@@ -69,12 +71,19 @@ for step in range(iterations):
 
     # print(f"Min Δw: {delta_w.min().item()}, Max Δw: {delta_w.max().item()}")
 
+    avg_max_min[0] += delta_w.max().item()
+    avg_max_min[1] += delta_w.min().item()
+
     with torch.no_grad():
         model.fc1.weight[out_neuron] += delta_w
         model.fc1.weight[out_neuron].clamp_(0.0, 1.0) 
 
-
     if step % 1000 == 0:
+
+        print(f"Max: {avg_max_min[0] / 1000}, Min: {avg_max_min[1] / 1000}")
+
+        avg_max_min[0] = 0
+        avg_max_min[1] = 0
 
         model_weights = model.fc1.weight
         num_neurons = model_weights.shape[0]
@@ -106,6 +115,5 @@ for step in range(iterations):
     #     plt.ylim(0, threshold+5)
     #     plt.legend()
     #     plt.show()
-
 
 
