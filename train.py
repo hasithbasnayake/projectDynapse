@@ -16,13 +16,14 @@ from stdp_time import *
 # Hyperparameters
 
 num_input = 784 # Model
-num_output = 10
+num_output = 100
 beta = 0.9
 threshold = 20
 reset_mechanism = "zero"
 
-iterations = 10000 # Training
+iterations = 20000 # Training
 num_steps = 255
+epochs = 5 
 
 A_plus = 5e-3 # STDP
 A_minus = 3.75e-3
@@ -52,9 +53,21 @@ avg_max_min = [0, 0]
 
 # Training Loop 
 
+for epoch in range(epochs):
+
+    # Train over a 5,000 set dataset with 50 output neurons over 5 epochs to see if there's any learning being done 
+    # Checkpoint the model at each epoch as well as saving the resulting receptive fields within a separate folder 
+
+    # Then test reconstruction given this model, note that the linear regression model should be trained on these 5,000 images
+    # Which means you'll need to have a way 
+
+
+    None 
+
+
 for step in range(iterations):
 
-    print(f"Progress: {step / iterations}%", end='\r', flush=True)
+    print(f"Progress: {step} / {iterations}", end='\r', flush=True)
 
     image, label = next(dataiter)
 
@@ -116,3 +129,7 @@ for step in range(iterations):
     #     plt.show()
 
 
+# Save The Model
+
+torch.save(model.state_dict(), 'model.pt')
+print(f"Model parameters saved!")
