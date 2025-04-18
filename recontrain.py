@@ -15,7 +15,7 @@ beta = 0.9
 threshold = 20
 reset_mechanism = "zero"
 
-iterations = 200 # Training
+iterations = 1000 # Training
 num_steps = 255
 
 transform = transforms.Compose( # Data
@@ -24,17 +24,18 @@ transform = transforms.Compose( # Data
 
 # Dataloading 
 
-training_set = datasets.MNIST('MNIST', train=True, transform=transform, download=True)
+# training_set = datasets.MNIST('MNIST', train=True, transform=transform, download=True)
 
-training_loader = torch.utils.data.DataLoader(training_set, batch_size=1, shuffle=True) # print('Training set has {} images'.format(len(training_set)))
+training_subset = torch.load("training_subset.pt")
+
+training_loader = torch.utils.data.DataLoader(training_subset, batch_size=1, shuffle=True) # print('Training set has {} images'.format(len(training_set)))
 
 dataiter = iter(training_loader)
 
 # Model Instantiation
 
 model = Net(num_input=num_input, num_output=num_output, beta=beta, threshold=threshold, reset_mechanism=reset_mechanism)
-model.load_state_dict(torch.load('model.pt'))
-model.eval()
+model.load_state_dict(torch.load('models/model_99.pt'))
 
 image_to_reconstruct = None
 spk_to_reconstruct = None
